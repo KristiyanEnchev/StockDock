@@ -8,9 +8,8 @@
 
     using MediatR;
 
-    using Mapster;
-
     using Application.Common.Behaviours;
+    using Application.Common.Mappings;
 
     using Shared.Mappings;
 
@@ -23,10 +22,18 @@
             services.AddMediator();
         }
 
-        private static void AddMapperConfig(this IServiceCollection services)
+        private static IServiceCollection AddMapperConfig(this IServiceCollection services)
         {
-            services.AddMapster();
-            MapsterConfig.Configure();
+            var modelAssembly = Assembly.GetAssembly(typeof(Models.TokenSettings))
+                ?? throw new InvalidOperationException(
+                    $"Models assembly not found.");
+
+            services.AddMappings(
+                modelAssembly,
+                typeof(IMapFrom<>).Assembly
+            );
+
+            return services;
         }
 
         private static void AddValidators(this IServiceCollection services)

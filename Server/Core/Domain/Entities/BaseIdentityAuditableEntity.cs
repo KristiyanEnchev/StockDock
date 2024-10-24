@@ -2,19 +2,22 @@
 {
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public abstract class BaseEntity
+    using Microsoft.AspNetCore.Identity;
+
+    using Domain.Interfaces;
+
+    public abstract class BaseIdentityAuditableEntity : IdentityUser, IAuditableEntity
     {
-        public string Id { get; protected set; }
-
         private readonly List<BaseEvent> _domainEvents = new();
-
-        protected BaseEntity()
-        {
-            Id = Guid.NewGuid().ToString();
-        }
 
         [NotMapped]
         public IReadOnlyCollection<BaseEvent> DomainEvents => _domainEvents.AsReadOnly();
+
+        public string? CreatedBy { get; set; }
+        public DateTimeOffset? CreatedDate { get; set; }
+        public string? UpdatedBy { get; set; }
+        public DateTimeOffset? UpdatedDate { get; set; }
+
         public void AddDomainEvent(BaseEvent domainEvent) => _domainEvents.Add(domainEvent);
         public void RemoveDomainEvent(BaseEvent domainEvent) => _domainEvents.Remove(domainEvent);
         public void ClearDomainEvents() => _domainEvents.Clear();
