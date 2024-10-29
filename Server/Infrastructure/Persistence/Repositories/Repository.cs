@@ -1,6 +1,6 @@
 ﻿namespace Persistence.Repositories
 {
-    public class Repository
+    public class RepositoryBase
     {
     }
 }

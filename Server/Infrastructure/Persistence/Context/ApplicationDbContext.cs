@@ -1,6 +1,7 @@
 ﻿namespace Persistence.Context
 {
     using System.Reflection;
+    using System.Linq.Expressions;
     using System.Text.RegularExpressions;
 
     using Microsoft.AspNetCore.Identity;
@@ -28,6 +29,8 @@
         {
             base.OnModelCreating(modelBuilder);
 
+            ApplySoftDelete(modelBuilder);
+
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
             modelBuilder.ApplySnakeCaseNamingConvention();
 
@@ -47,16 +50,46 @@
             var entries = ChangeTracker.Entries<IAuditableEntity>()
                 .Where(e => e.State is EntityState.Added or EntityState.Modified);
 
+            var userId = _user.Id;
+            var currentTime = DateTimeOffset.UtcNow;
+
             foreach (var entry in entries)
             {
                 if (entry.State == EntityState.Added)
                 {
-                    entry.Entity.CreatedDate = DateTimeOffset.UtcNow;
-                    entry.Entity.CreatedBy = _user.Id;
+                    entry.Entity.CreatedDate = currentTime;
+                    entry.Entity.CreatedBy = userId;
                 }
 
-                entry.Entity.UpdatedDate = DateTimeOffset.UtcNow;
-                entry.Entity.UpdatedBy = _user.Id;
+                entry.Entity.UpdatedDate = currentTime;
+                entry.Entity.UpdatedBy = userId;
+
+                if (entry.Entity is ISoftDelete softDelete &&
+                    entry.Property(nameof(ISoftDelete.IsDeleted)).IsModified &&
+                    softDelete.IsDeleted)
+                {
+                    softDelete.DeletedDate = currentTime;
+                    softDelete.DeletedBy = userId;
+                }
+            }
+        }
+
+        private void ApplySoftDelete(ModelBuilder modelBuilder) 
+        {
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            {
+                if (typeof(ISoftDelete).IsAssignableFrom(entityType.ClrType))
+                {
+                    var parameter = Expression.Parameter(entityType.ClrType, "p");
+                    var deletedCheck = Expression.Lambda(
+                        Expression.Equal(
+                            Expression.Property(parameter, nameof(ISoftDelete.IsDeleted)),
+                            Expression.Constant(false)
+                        ),
+                        parameter
+                    );
+                    modelBuilder.Entity(entityType.ClrType).HasQueryFilter(deletedCheck);
+                }
             }
         }
 
