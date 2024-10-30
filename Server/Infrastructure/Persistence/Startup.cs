@@ -5,9 +5,11 @@
     using Microsoft.Extensions.DependencyInjection;
 
     using Persistence.Context;
+    using Persistence.Repositories;
 
     using Domain;
     using Domain.Interfaces;
+
 
     public static class Startup
     {
@@ -32,9 +34,10 @@
             services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
         }
 
-        private static void AddRepositories(this IServiceCollection services)
+        public static IServiceCollection AddRepositories(this IServiceCollection services)
         {
-
+            services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
+            return services;
         }
     }
 }
