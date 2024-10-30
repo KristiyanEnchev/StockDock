@@ -9,6 +9,7 @@
 
     using Domain;
     using Domain.Interfaces;
+
     using Shared.Interfaces;
 
     public static class Startup

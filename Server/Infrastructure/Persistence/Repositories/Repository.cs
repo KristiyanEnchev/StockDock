@@ -11,6 +11,8 @@
 
     using Persistence.Context;
 
+    using Shared.Interfaces;
+
     public class Repository<TEntity> : IRepository<TEntity> where TEntity : BaseAuditableEntity
     {
         private readonly ApplicationDbContext _context;

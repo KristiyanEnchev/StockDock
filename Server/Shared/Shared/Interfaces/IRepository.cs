@@ -1,4 +1,4 @@
-﻿namespace Persistence.Repositories
+﻿namespace Shared.Interfaces
 {
     using System.Linq.Expressions;
 
