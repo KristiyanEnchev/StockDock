@@ -9,7 +9,7 @@
 
     using Domain;
     using Domain.Interfaces;
-
+    using Shared.Interfaces;
 
     public static class Startup
     {
@@ -37,6 +37,8 @@
         public static IServiceCollection AddRepositories(this IServiceCollection services)
         {
             services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
+            services.AddTransient<ITransactionHelper, TransactionHelper>();
+
             return services;
         }
     }
