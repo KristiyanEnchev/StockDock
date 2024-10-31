@@ -2,6 +2,8 @@
 {
     using Shared;
 
+    using Models.User;
+
     public interface IUserService
     {
         Task<UserDto> GetByIdAsync(string id);
