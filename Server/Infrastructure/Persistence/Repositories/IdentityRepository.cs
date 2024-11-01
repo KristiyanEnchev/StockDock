@@ -57,6 +57,52 @@
             }
         }
 
-        
+        public virtual async Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                _dbSet.Update(entity);
+                await Task.CompletedTask;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while updating identity entity");
+                throw;
+            }
+        }
+
+        public async Task DeleteAsync(TEntity entity, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                entity.IsDeleted = true;
+                await UpdateAsync(entity, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while deleting identity entity");
+                throw;
+            }
+        }
+
+        public virtual async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return await _context.SaveChangesAsync(cancellationToken);
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                _logger.LogError(ex, "Concurrency conflict detected while saving changes");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while saving changes");
+                throw;
+            }
+        }
+
+        public virtual IQueryable<TEntity> AsNoTracking() => _dbSet.AsNoTracking();
     }
 }
