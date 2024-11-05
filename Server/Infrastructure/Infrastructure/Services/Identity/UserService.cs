@@ -58,6 +58,51 @@
             }
         }
 
+        public async Task<bool> DeactivateUserAsync(string userId)
+        {
+            try
+            {
+                var user = await _userRepository.GetByIdAsync<User>(userId)
+                    ?? throw new CustomException($"User with ID {userId} not found.");
+
+                user.IsActive = false;
+                await _userRepository.UpdateAsync(user);
+                await _userRepository.SaveChangesAsync();
+
+                await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.MaxValue);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while deactivating user {UserId}", userId);
+                throw;
+            }
+        }
+
+        public async Task<bool> ReactivateUserAsync(string userId)
+        {
+            try
+            {
+                var user = await _userRepository.GetByIdAsync<User>(userId)
+                    ?? throw new CustomException($"User with ID {userId} not found.");
+
+                user.IsActive = true;
+                await _userRepository.UpdateAsync(user);
+                await _userRepository.SaveChangesAsync();
+
+                await _userManager.SetLockoutEndDateAsync(user, null);
+                await _userManager.ResetAccessFailedCountAsync(user);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while reactivating user {UserId}", userId);
+                throw;
+            }
+        }
+
        
     }
 }
