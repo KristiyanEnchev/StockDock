@@ -1,4 +1,4 @@
-﻿namespace Domain.Entities
+﻿namespace Models
 {
     using Mapster;
 

@@ -3,6 +3,7 @@
     using Domain.Entities;
 
     using Mapster;
+    using Models;
 
     public abstract class BaseIdentityAuditableDto<TDto, TEntity> : BaseDto<TDto, TEntity>
      where TDto : class, new()
