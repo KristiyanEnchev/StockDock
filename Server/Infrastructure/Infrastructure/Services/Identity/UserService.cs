@@ -143,6 +143,42 @@
             }
         }
 
-        
+        public async Task<Result<string>> UpdateEmailAsync(string userId, UpdateEmailRequest request)
+        {
+            try
+            {
+                var user = await _userManager.FindByIdAsync(userId)
+                    ?? throw new CustomException($"User with ID {userId} not found.");
+
+                if (!await _userManager.CheckPasswordAsync(user, request.CurrentPassword))
+                {
+                    return Result<string>.Failure(new List<string> { "Current password is incorrect." });
+                }
+
+                if (await _userManager.FindByEmailAsync(request.NewEmail) != null)
+                {
+                    return Result<string>.Failure(new List<string> { "Email is already in use." });
+                }
+
+                user.Email = request.NewEmail;
+                user.UserName = request.NewEmail;
+                user.EmailConfirmed = false;
+
+                var result = await _userManager.UpdateAsync(user);
+                if (!result.Succeeded)
+                {
+                    return Result<string>.Failure(result.Errors.Select(e => e.Description).ToList());
+                }
+
+                var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+                return Result<string>.SuccessResult("Email update initiated. Please check your email to confirm the change.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while updating email for user {UserId}", userId);
+                throw;
+            }
+        }
     }
 }
