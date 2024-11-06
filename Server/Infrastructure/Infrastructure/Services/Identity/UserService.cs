@@ -103,6 +103,46 @@
             }
         }
 
-       
+        public async Task<IReadOnlyList<UserDto>> GetUsersByRoleAsync(string role)
+        {
+            try
+            {
+                var usersInRole = await _userManager.GetUsersInRoleAsync(role);
+                return usersInRole.Adapt<IReadOnlyList<UserDto>>();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while getting users by role {Role}", role);
+                throw;
+            }
+        }
+
+        public async Task<Result<string>> ChangePasswordAsync(string userId, ChangePasswordRequest request)
+        {
+            try
+            {
+                var user = await _userManager.FindByIdAsync(userId)
+                    ?? throw new CustomException($"User with ID {userId} not found.");
+
+                var result = await _userManager.ChangePasswordAsync(
+                    user,
+                    request.CurrentPassword,
+                    request.NewPassword);
+
+                if (!result.Succeeded)
+                {
+                    return Result<string>.Failure(result.Errors.Select(e => e.Description).ToList());
+                }
+
+                return Result<string>.SuccessResult("Password changed successfully.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while changing password for user {UserId}", userId);
+                throw;
+            }
+        }
+
+        
     }
 }
