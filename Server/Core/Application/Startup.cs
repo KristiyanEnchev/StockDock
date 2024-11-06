@@ -12,6 +12,7 @@
     using Application.Common.Mappings;
 
     using Shared.Mappings;
+    using Domain.Entities;
 
     public static class Startup
     {
@@ -29,6 +30,7 @@
                     $"Models assembly not found.");
 
             services.AddMappings(
+                Assembly.GetExecutingAssembly(),
                 modelAssembly,
                 typeof(IMapFrom<>).Assembly
             );

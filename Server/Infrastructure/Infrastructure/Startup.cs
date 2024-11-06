@@ -37,7 +37,8 @@
         private static IServiceCollection AddServices(this IServiceCollection services)
         {
             services
-                .AddTransient<IMediator, Mediator>();
+                .AddTransient<IMediator, Mediator>()
+                .AddTransient<IUserService, UserService>();
 
             return services;
         }

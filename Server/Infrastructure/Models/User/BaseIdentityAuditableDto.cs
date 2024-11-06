@@ -3,11 +3,10 @@
     using Domain.Entities;
 
     using Mapster;
-    using Models;
 
-    public abstract class BaseIdentityAuditableDto<TDto, TEntity> : BaseDto<TDto, TEntity>
-     where TDto : class, new()
-     where TEntity : BaseIdentityAuditableEntity
+    public abstract class BaseIdentityAuditableDto<TDto, TEntity> : IMapFrom<TEntity>
+    where TDto : class, new()
+    where TEntity : BaseIdentityAuditableEntity
     {
         public string Id { get; set; } = string.Empty;
         public string? UserName { get; set; }
@@ -22,19 +21,12 @@
         public string? DeletedBy { get; set; }
         public DateTimeOffset? DeletedDate { get; set; }
 
-        public override void Mapping(TypeAdapterConfig config)
+        public virtual void Mapping(TypeAdapterConfig config)
         {
             config.NewConfig<TEntity, TDto>()
                 .IgnoreNullValues(true)
                 .PreserveReference(true)
-                .MaxDepth(3)
-                .Compile();
-
-            config.NewConfig<TDto, TEntity>()
-                .IgnoreNullValues(true)
-                .PreserveReference(true)
-                .MaxDepth(3)
-                .Compile();
+                .MaxDepth(3);
         }
     }
 }

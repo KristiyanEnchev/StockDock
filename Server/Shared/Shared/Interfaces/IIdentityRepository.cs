@@ -9,6 +9,7 @@
         Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default);
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
         IQueryable<TEntity> AsNoTracking();
+        IQueryable<TEntity> AsTracking();
         Task DeleteAsync(TEntity entity, CancellationToken cancellationToken = default);
     }
 }

@@ -104,5 +104,6 @@
         }
 
         public virtual IQueryable<TEntity> AsNoTracking() => _dbSet.AsNoTracking();
+        public virtual IQueryable<TEntity> AsTracking() => _dbSet.AsTracking();
     }
 }

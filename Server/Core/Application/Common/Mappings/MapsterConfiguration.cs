@@ -43,18 +43,22 @@
         private static void ApplyMappingsFromAssembly(TypeAdapterConfig config, Assembly assembly)
         {
             var types = assembly.GetExportedTypes()
-                .Where(t => t.GetInterfaces()
-                    .Any(i => i.IsGenericType &&
-                         i.GetGenericTypeDefinition() == typeof(IMapFrom<>)))
+                .Where(t => !t.IsAbstract && !t.IsInterface && 
+                    t.GetInterfaces()
+                        .Any(i => i.IsGenericType &&
+                             i.GetGenericTypeDefinition() == typeof(IMapFrom<>)))
                 .ToList();
 
             foreach (var type in types)
             {
                 var instance = Activator.CreateInstance(type);
                 var methodInfo = type.GetMethod("Mapping")
-                    ?? type.GetInterface("IMapFrom`1")?.GetMethod("Mapping");
+                               ?? type.GetInterface("IMapFrom`1")?.GetMethod("Mapping");
 
                 methodInfo?.Invoke(instance, new object[] { config });
+
+                var customizeMapping = type.GetMethod("CustomizeMapping");
+                customizeMapping?.Invoke(instance, new object[] { config });
             }
         }
     }

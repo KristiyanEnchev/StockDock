@@ -45,6 +45,14 @@ namespace Persistence.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_date");
 
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<DateTimeOffset?>("DeletedDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_date");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(256)
@@ -63,6 +71,10 @@ namespace Persistence.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean")
                         .HasColumnName("is_active");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_deleted");
 
                     b.Property<string>("LastName")
                         .HasMaxLength(100)

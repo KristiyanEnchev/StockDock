@@ -14,6 +14,7 @@
     using Shared;
     using Shared.Exceptions;
     using Shared.Interfaces;
+    using Microsoft.EntityFrameworkCore;
 
     public class UserService : IUserService
     {
@@ -62,7 +63,8 @@
         {
             try
             {
-                var user = await _userRepository.GetByIdAsync<User>(userId)
+                var user = await _userRepository.AsTracking()
+                    .FirstOrDefaultAsync(u => u.Id == userId)
                     ?? throw new CustomException($"User with ID {userId} not found.");
 
                 user.IsActive = false;

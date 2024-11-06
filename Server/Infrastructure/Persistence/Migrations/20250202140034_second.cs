@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Persistence.Migrations
 {
-    public partial class InitialMigration : Migration
+    public partial class second : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -20,13 +20,13 @@ namespace Persistence.Migrations
                 {
                     id = table.Column<string>(type: "text", nullable: false),
                     description = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    normalized_name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    concurrency_stamp = table.Column<string>(type: "text", nullable: true),
                     created_by = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     created_date = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     updated_by = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    updated_date = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
-                    normalized_name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
-                    concurrency_stamp = table.Column<string>(type: "text", nullable: true)
+                    updated_date = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -43,10 +43,6 @@ namespace Persistence.Migrations
                     last_name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                     is_active = table.Column<bool>(type: "boolean", nullable: false),
                     refresh_token_expiry_time = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    created_by = table.Column<string>(type: "text", nullable: true),
-                    created_date = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    updated_by = table.Column<string>(type: "text", nullable: true),
-                    updated_date = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     user_name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     normalized_user_name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
@@ -60,7 +56,14 @@ namespace Persistence.Migrations
                     two_factor_enabled = table.Column<bool>(type: "boolean", nullable: false),
                     lockout_end = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     lockout_enabled = table.Column<bool>(type: "boolean", nullable: false),
-                    access_failed_count = table.Column<int>(type: "integer", nullable: false)
+                    access_failed_count = table.Column<int>(type: "integer", nullable: false),
+                    created_by = table.Column<string>(type: "text", nullable: true),
+                    created_date = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    updated_by = table.Column<string>(type: "text", nullable: true),
+                    updated_date = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    is_deleted = table.Column<bool>(type: "boolean", nullable: false),
+                    deleted_by = table.Column<string>(type: "text", nullable: true),
+                    deleted_date = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
