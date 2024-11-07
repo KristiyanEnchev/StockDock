@@ -19,17 +19,20 @@
     public class UserService : IUserService
     {
         private readonly IIdentityRepository<User> _userRepository;
+        private readonly ITransactionHelper _transactionHelper;
         private readonly UserManager<User> _userManager;
         private readonly ILogger<UserService> _logger;
 
         public UserService(
             IIdentityRepository<User> userRepository,
             UserManager<User> userManager,
-            ILogger<UserService> logger)
+            ILogger<UserService> logger,
+            ITransactionHelper transactionHelper)
         {
             _userRepository = userRepository;
             _userManager = userManager;
             _logger = logger;
+            _transactionHelper = transactionHelper;
         }
 
         public async Task<UserDto> GetByIdAsync(string id)
@@ -163,19 +166,29 @@
                     return Result<string>.Failure(new List<string> { "Email is already in use." });
                 }
 
-                user.Email = request.NewEmail;
-                user.UserName = request.NewEmail;
-                user.EmailConfirmed = false;
-
-                var result = await _userManager.UpdateAsync(user);
-                if (!result.Succeeded)
+                await using var transaction = await _transactionHelper.BeginTransactionAsync();
+                try
                 {
-                    return Result<string>.Failure(result.Errors.Select(e => e.Description).ToList());
+                    user.Email = request.NewEmail;
+                    user.UserName = request.NewEmail;
+                    user.EmailConfirmed = false;
+
+                    var result = await _userManager.UpdateAsync(user);
+                    if (!result.Succeeded)
+                    {
+                        return Result<string>.Failure(result.Errors.Select(e => e.Description).ToList());
+                    }
+
+                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    await transaction.CommitAsync();
+
+                    return Result<string>.SuccessResult("Email update initiated. Please check your email to confirm the change.");
                 }
-
-                var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-
-                return Result<string>.SuccessResult("Email update initiated. Please check your email to confirm the change.");
+                catch
+                {
+                    await transaction.RollbackAsync();
+                    throw;
+                }
             }
             catch (Exception ex)
             {
