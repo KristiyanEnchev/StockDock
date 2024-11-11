@@ -20,5 +20,14 @@
         {
             return await Mediator.Send(new DeactivateUserCommand(id)).ToActionResult();
         }
+
+        [HttpPost("{id}/reactivate")]
+        [Authorize(Roles = "Administrator")]
+        [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<Result<bool>>> Reactivate(string id)
+        {
+            return await Mediator.Send(new ReactivateUserCommand(id)).ToActionResult();
+        }
     }
 }
