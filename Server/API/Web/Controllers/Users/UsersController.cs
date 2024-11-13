@@ -53,5 +53,18 @@
 
             return await Mediator.Send(new ChangeUserPasswordCommand(id, request.CurrentPassword, request.NewPassword)).ToActionResult();
         }
+
+        [HttpPost("{id}/update-email")]
+        [ProducesResponseType(typeof(Result<string>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<Result<string>>> UpdateEmail(string id, UpdateEmailRequest request)
+        {
+            if (id != _user.Id)
+            {
+                return BadRequest(Result<string>.Failure(new List<string> { "You can only update your own email." }));
+            }
+
+            return await Mediator.Send(new UpdateUserEmailCommand(id, request.NewEmail, request.CurrentPassword)).ToActionResult();
+        }
     }
 }
