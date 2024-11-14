@@ -32,6 +32,13 @@
             return await Mediator.Send(new GetUserByIdQuery(id)).ToActionResult();
         }
 
+        [HttpGet]
+        [ProducesResponseType(typeof(Result<IReadOnlyList<UserDto>>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<Result<IReadOnlyList<UserDto>>>> GetAll()
+        {
+            return await Mediator.Send(new GetAllUsersQuery()).ToActionResult();
+        }
+
         [HttpPost("{id}/deactivate")]
         [Authorize(Roles = "Administrator")]
         [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status200OK)]
