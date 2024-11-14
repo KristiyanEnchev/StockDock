@@ -5,6 +5,7 @@
     using Microsoft.AspNetCore.Authorization;
 
     using Application.Interfaces;
+    using Application.Handlers.Users.Query;
     using Application.Handlers.Users.Commands;
 
     using Web.Extensions;
@@ -21,6 +22,14 @@
         public UsersController(IUser user)
         {
             _user = user;
+        }
+
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(Result<UserDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<Result<UserDto>>> GetById(string id)
+        {
+            return await Mediator.Send(new GetUserByIdQuery(id)).ToActionResult();
         }
 
         [HttpPost("{id}/deactivate")]
