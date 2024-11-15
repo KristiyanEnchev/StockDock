@@ -8,6 +8,7 @@
     {
         Task<UserDto> GetByIdAsync(string id);
         Task<IReadOnlyList<UserDto>> GetAllAsync();
+        Task<IReadOnlyList<UserDto>> GetUsersByRoleAsync(string role);
         Task<bool> DeactivateUserAsync(string userId);
         Task<bool> ReactivateUserAsync(string userId);
 
