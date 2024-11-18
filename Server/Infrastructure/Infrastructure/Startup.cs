@@ -20,6 +20,8 @@
     using Infrastructure.Services.Token;
 
     using Application.Interfaces;
+    using System.Text.Json.Serialization;
+    using System.Text.Json;
 
     public static class Startup
     {
@@ -36,6 +38,15 @@
 
         private static IServiceCollection AddServices(this IServiceCollection services)
         {
+            var jsonOptions = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+                Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
+            };
+
+            services.AddSingleton(jsonOptions);
+
             services
                 .AddTransient<IMediator, Mediator>()
                 .AddTransient<IUserService, UserService>();
@@ -58,7 +69,7 @@
                 })
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders()
-                .AddTokenProvider("BookClub", typeof(DataProtectorTokenProvider<User>));
+                .AddTokenProvider("CleanArchitecture", typeof(DataProtectorTokenProvider<User>));
 
             return services;
         }

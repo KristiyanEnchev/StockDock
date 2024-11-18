@@ -6,7 +6,7 @@
 
     using Domain.Entities;
 
-    using Npgsql;
+    using Shared.Interfaces;
 
     public class ApplicationDbContextInitialiser
     {
@@ -14,75 +14,84 @@
         private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<UserRole> _roleManager;
+        private readonly ITransactionHelper _transactionHelper;
 
-        public ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitialiser> logger, ApplicationDbContext context, UserManager<User> userManager, RoleManager<UserRole> roleManager)
+        public ApplicationDbContextInitialiser(
+            ILogger<ApplicationDbContextInitialiser> logger,
+            ApplicationDbContext context,
+            UserManager<User> userManager,
+            RoleManager<UserRole> roleManager,
+            ITransactionHelper transactionHelper)
         {
             _logger = logger;
             _context = context;
             _userManager = userManager;
             _roleManager = roleManager;
+            _transactionHelper = transactionHelper;
         }
 
         public async Task InitialiseAsync()
         {
+            if (!await _context.Database.CanConnectAsync())
+            {
+                _logger.LogInformation("Database does not exist. Creating and applying migrations...");
+                await _context.Database.MigrateAsync();
+                return;
+            }
+
+            using var transaction = await _transactionHelper.BeginTransactionAsync();
             try
             {
-                if (!await DatabaseExistsAsync())
+                var pendingMigrations = (await _context.Database.GetPendingMigrationsAsync()).ToList();
+                if (pendingMigrations.Any())
                 {
-                    _logger.LogInformation("Database does not exist. Creating it now...");
-                    await CreateDatabaseAsync();
+                    _logger.LogInformation("Applying {Count} pending migrations: {Migrations}",
+                        pendingMigrations.Count,
+                        string.Join(", ", pendingMigrations));
+                    await _context.Database.MigrateAsync();
+                }
+                else
+                {
+                    _logger.LogInformation("No pending migrations. Database is up to date.");
                 }
 
-                await _context.Database.MigrateAsync();
+                await transaction.CommitAsync();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while initialising the database.");
+                await transaction.RollbackAsync();
                 throw;
             }
         }
 
         public async Task SeedAsync()
         {
+            if (!await _context.Database.CanConnectAsync())
+            {
+                _logger.LogError("Cannot seed database because it does not exist or cannot be accessed.");
+                return;
+            }
+
+            using var transaction = await _transactionHelper.BeginTransactionAsync();
             try
             {
-                await TrySeedAsync();
+                if (!await _context.Set<UserRole>().AnyAsync())
+                {
+                    await TrySeedAsync();
+                    _logger.LogInformation("Seeding completed successfully");
+                }
+                else
+                {
+                    _logger.LogInformation("Skipping seeding as data already exists");
+                }
+
+                await transaction.CommitAsync();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while seeding the database.");
-                throw;
-            }
-        }
-
-        private async Task<bool> DatabaseExistsAsync()
-        {
-            try
-            {
-                return await _context.Database.CanConnectAsync();
-            }
-            catch (NpgsqlException ex) when (ex.Message.Contains("does not exist"))
-            {
-                _logger.LogInformation("Database does not exist.");
-                return false;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while checking if the database exists.");
-                throw;
-            }
-        }
-
-        private async Task CreateDatabaseAsync()
-        {
-            try
-            {
-                await _context.Database.EnsureCreatedAsync();
-                _logger.LogInformation("Database created successfully.");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while creating the database.");
+                await transaction.RollbackAsync();
                 throw;
             }
         }

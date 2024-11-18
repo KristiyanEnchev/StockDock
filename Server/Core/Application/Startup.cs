@@ -12,7 +12,6 @@
     using Application.Common.Mappings;
 
     using Shared.Mappings;
-    using Domain.Entities;
 
     public static class Startup
     {

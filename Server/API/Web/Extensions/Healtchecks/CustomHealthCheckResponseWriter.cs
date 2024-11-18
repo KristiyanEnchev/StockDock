@@ -1,8 +1,7 @@
 ﻿namespace Web.Extensions.Healtchecks
 {
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Converters;
-    using Newtonsoft.Json.Serialization;
+    using System.Text.Json;
+    using System.Text.Json.Serialization;
 
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -26,15 +25,14 @@
                 }).ToList()
             };
 
-            var jsonResponse = JsonConvert.SerializeObject(response, new JsonSerializerSettings
+            var jsonOptions = new JsonSerializerOptions
             {
-                ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                NullValueHandling = NullValueHandling.Ignore,
-                Converters = new List<JsonConverter>
-                {
-                    new StringEnumConverter() { NamingStrategy = new CamelCaseNamingStrategy()}
-                }
-            });
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+                Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
+            };
+
+            var jsonResponse = JsonSerializer.Serialize(response, jsonOptions);
             httpContext.Response.ContentType = "application/json";
 
             if (result.Status != HealthStatus.Healthy)

@@ -3,14 +3,13 @@
     using System;
     using System.Net;
     using System.Linq;
+    using System.Text.Json;
     using System.Threading.Tasks;
     using System.Collections.Generic;
+    using System.Text.Json.Serialization;
 
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Builder;
-
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Serialization;
 
     using Serilog;
 
@@ -91,13 +90,13 @@
                 errors = messages
             };
 
-            await response.WriteAsync(JsonConvert.SerializeObject(errorResponse, new JsonSerializerSettings
+            var jsonOptions = new JsonSerializerOptions
             {
-                ContractResolver = new DefaultContractResolver
-                {
-                    NamingStrategy = new CamelCaseNamingStrategy(true, true)
-                }
-            }));
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+            };
+
+            await response.WriteAsync(JsonSerializer.Serialize(errorResponse, jsonOptions));
         }
     }
 

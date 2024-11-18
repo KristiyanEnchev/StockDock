@@ -73,9 +73,9 @@
 
         public async Task<string> GenerateRefreshToken(User user)
         {
-            await userManager.RemoveAuthenticationTokenAsync(user, "BookClub", "RefreshToken");
-            var newRefreshToken = await userManager.GenerateUserTokenAsync(user, "BookClub", "RefreshToken");
-            IdentityResult result = await userManager.SetAuthenticationTokenAsync(user, "BookClub", "RefreshToken", newRefreshToken);
+            await userManager.RemoveAuthenticationTokenAsync(user, "CleanArchitecture", "RefreshToken");
+            var newRefreshToken = await userManager.GenerateUserTokenAsync(user, "CleanArchitecture", "RefreshToken");
+            IdentityResult result = await userManager.SetAuthenticationTokenAsync(user, "CleanArchitecture", "RefreshToken", newRefreshToken);
 
             if (!result.Succeeded)
             {

@@ -30,8 +30,8 @@
                options.UseNpgsql(connectionString,
                    builder => builder.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
 
+            services.AddTransient<ITransactionHelper, TransactionHelper>();
             services.AddScoped<ApplicationDbContextInitialiser>();
-
             services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
         }
 
@@ -39,7 +39,6 @@
         {
             services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
             services.AddTransient(typeof(IIdentityRepository<>), typeof(IdentityRepository<>));
-            services.AddTransient<ITransactionHelper, TransactionHelper>();
 
             return services;
         }

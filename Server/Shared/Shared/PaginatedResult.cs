@@ -1,34 +1,31 @@
 ﻿namespace Shared
 {
-    using Newtonsoft.Json;
+    using System;
+    using System.Collections.Generic;
+    using System.Text.Json.Serialization;
 
     public class PaginatedResult<T> : Result<T>
     {
-        private new List<T> _data;
+        private List<T> _data;
 
         public PaginatedResult() : base()
         {
             _data = new List<T>();
         }
 
-        public PaginatedResult(List<T> data) : base()
-        {
-            _data = data;
-        }
-
         [JsonConstructor]
-        public PaginatedResult(bool succeeded, List<T> data = default!, int count = 0, int pageNumber = 1, int pageSize = 10)
+        public PaginatedResult(bool success, List<T> data, int totalCount, int currentPage, int pageSize)
             : base()
         {
+            Success = success;
             _data = data ?? new List<T>();
-            Success = succeeded;
-            CurrentPage = pageNumber;
+            TotalCount = totalCount;
+            CurrentPage = currentPage;
             PageSize = pageSize;
-            TotalPages = (int)Math.Ceiling(count / (double)pageSize);
-            TotalCount = count;
+            TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
         }
 
-        [JsonProperty(Order = -2)]
+        [JsonPropertyOrder(-2)]
         public new List<T> Data
         {
             get => _data;
@@ -50,9 +47,9 @@
         [JsonIgnore]
         public bool HasNextPage => CurrentPage < TotalPages;
 
-        public static PaginatedResult<T> Create(List<T> data, int count, int pageNumber, int pageSize)
+        public static PaginatedResult<T> Create(List<T> data, int totalCount, int currentPage, int pageSize)
         {
-            return new PaginatedResult<T>(true, data, count, pageNumber, pageSize);
+            return new PaginatedResult<T>(true, data, totalCount, currentPage, pageSize);
         }
     }
 }

@@ -17,8 +17,9 @@
             var config = TypeAdapterConfig.GlobalSettings;
 
             config.Default
-                .NameMatchingStrategy(NameMatchingStrategy.Exact)
-                .PreserveReference(true);
+                .NameMatchingStrategy(NameMatchingStrategy.Flexible)
+                .PreserveReference(true)
+                .ShallowCopyForSameType(true);
 
             foreach (var assembly in assemblies)
             {
@@ -43,7 +44,7 @@
         private static void ApplyMappingsFromAssembly(TypeAdapterConfig config, Assembly assembly)
         {
             var types = assembly.GetExportedTypes()
-                .Where(t => !t.IsAbstract && !t.IsInterface && 
+                .Where(t => !t.IsAbstract && !t.IsInterface &&
                     t.GetInterfaces()
                         .Any(i => i.IsGenericType &&
                              i.GetGenericTypeDefinition() == typeof(IMapFrom<>)))

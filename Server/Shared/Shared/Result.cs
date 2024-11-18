@@ -1,18 +1,20 @@
 ﻿namespace Shared
 {
-    using Newtonsoft.Json;
+    using System.Threading.Tasks;
+    using System.Collections.Generic;
+    using System.Text.Json.Serialization;
 
     using Shared.Interfaces;
 
     public class Result<T> : IResult<T>
     {
-        [JsonProperty(Order = -1)]
+        [JsonPropertyOrder(-1)]
         public bool Success { get; set; }
 
-        [JsonProperty(Order = 1)]
+        [JsonPropertyOrder(1)]
         public virtual T Data { get; set; }
 
-        [JsonProperty(Order = 2)]
+        [JsonPropertyOrder(2)]
         public List<string> Errors { get; set; }
 
         public Result()

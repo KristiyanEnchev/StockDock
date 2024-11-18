@@ -96,7 +96,7 @@
                     .UseHttpsRedirection()
                     .UseErrorHandler()
                     .UseRouting()
-                    .UseCors("BookClub")
+                    .UseCors("CleanArchitecture")
                     .UseAuthentication()
                     .UseAuthorization();
 
@@ -107,7 +107,7 @@
         {
             services.AddCors(options =>
             {
-                options.AddPolicy("BookClub",
+                options.AddPolicy("CleanArchitecture",
                     builder => builder
                        .AllowAnyHeader()
                        .AllowAnyMethod()
