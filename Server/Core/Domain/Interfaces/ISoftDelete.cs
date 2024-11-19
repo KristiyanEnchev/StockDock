@@ -1,4 +1,4 @@
-﻿namespace Domain.Entities
+﻿namespace Domain.Interfaces
 {
     public interface ISoftDelete
     {

@@ -12,6 +12,7 @@
     using Persistence.Context;
 
     using Shared.Interfaces;
+    using Domain.Interfaces;
 
     public class Repository<TEntity> : IRepository<TEntity> where TEntity : BaseAuditableEntity
     {
