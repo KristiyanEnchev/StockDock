@@ -45,6 +45,20 @@
             }
         }
 
-        
+        public async Task<Result<IReadOnlyList<StockDto>>> GetAllStocksAsync()
+        {
+            try
+            {
+                var stocks = await _stockRepository.GetAllAsync<StockDto>();
+                return Result<IReadOnlyList<StockDto>>.SuccessResult(stocks);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting all stocks");
+                throw;
+            }
+        }
+
+
     }
 }
