@@ -16,7 +16,7 @@
     using Shared.Interfaces;
     using Shared.Exceptions;
 
-    public class StockService 
+    public class StockService : IStockService
     {
         private readonly IRepository<Stock> _stockRepository;
         private readonly ILogger<StockService> _logger;
