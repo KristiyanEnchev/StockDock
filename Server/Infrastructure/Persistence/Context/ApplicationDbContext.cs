@@ -25,6 +25,10 @@
             _user = user;
         }
 
+        public DbSet<Stock> Stocks => Set<Stock>();
+        public DbSet<StockPriceHistory> StockPriceHistories => Set<StockPriceHistory>();
+        public DbSet<UserWatchlist> UserWatchlists => Set<UserWatchlist>();
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
