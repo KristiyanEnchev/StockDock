@@ -72,6 +72,84 @@
             }
         }
 
-       
+        public async Task<Result<bool>> RemoveFromWatchlistAsync(string userId, string symbol)
+        {
+            try
+            {
+                var watchlistItem = await _watchlistRepository
+                    .AsTracking()
+                    .Include(w => w.Stock)
+                    .FirstOrDefaultAsync(w => w.UserId == userId && w.Stock.Symbol == symbol);
+
+                if (watchlistItem == null)
+                {
+                    return Result<bool>.Failure($"Stock {symbol} not found in your watchlist.");
+                }
+
+                await _watchlistRepository.DeleteAsync(watchlistItem);
+                await _watchlistRepository.SaveChangesAsync();
+
+                return Result<bool>.SuccessResult(true);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error removing stock from watchlist for user {UserId}", userId);
+                throw;
+            }
+        }
+
+        public async Task<Result<IReadOnlyList<UserWatchlistDto>>> GetUserWatchlistAsync(string userId)
+        {
+            try
+            {
+                var watchlist = await _watchlistRepository
+                    .AsNoTracking()
+                    .Include(w => w.Stock)
+                    .Where(w => w.UserId == userId)
+                    .ProjectToType<UserWatchlistDto>()
+                    .ToListAsync();
+
+                return Result<IReadOnlyList<UserWatchlistDto>>.SuccessResult(watchlist);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting watchlist for user {UserId}", userId);
+                throw;
+            }
+        }
+
+        public async Task<Result<bool>> UpdateWatchlistAlertsAsync(string userId, string symbol, decimal? alertAbove, decimal? alertBelow)
+        {
+            try
+            {
+                var watchlistItem = await _watchlistRepository
+                    .AsTracking()
+                    .Include(w => w.Stock)
+                    .FirstOrDefaultAsync(w => w.UserId == userId && w.Stock.Symbol == symbol);
+
+                if (watchlistItem == null)
+                {
+                    return Result<bool>.Failure($"Stock {symbol} not found in your watchlist.");
+                }
+
+                if (alertAbove.HasValue && alertBelow.HasValue && alertAbove <= alertBelow)
+                {
+                    return Result<bool>.Failure("Alert above must be greater than alert below.");
+                }
+
+                watchlistItem.AlertAbove = alertAbove;
+                watchlistItem.AlertBelow = alertBelow;
+
+                await _watchlistRepository.UpdateAsync(watchlistItem);
+                await _watchlistRepository.SaveChangesAsync();
+
+                return Result<bool>.SuccessResult(true);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating watchlist alerts for user {UserId}", userId);
+                throw;
+            }
+        }
     }
 }
