@@ -1,6 +1,8 @@
 ﻿namespace Infrastructure
 {
     using System.Text;
+    using System.Text.Json;
+    using System.Text.Json.Serialization;
 
     using Microsoft.AspNetCore.Identity;
     using Microsoft.IdentityModel.Tokens;
@@ -10,18 +12,19 @@
 
     using MediatR;
 
+    using StackExchange.Redis;
+
     using Persistence.Context;
 
     using Domain.Entities;
 
     using Models;
 
-    using Infrastructure.Services.Identity;
     using Infrastructure.Services.Token;
+    using Infrastructure.Services.Cache;
+    using Infrastructure.Services.Identity;
 
     using Application.Interfaces;
-    using System.Text.Json.Serialization;
-    using System.Text.Json;
 
     public static class Startup
     {
@@ -29,6 +32,7 @@
         {
             services
                 .AddServices()
+                .AddRedis(configuration)
                 .AddConfigurations(configuration)
                 .AddIdentity(configuration)
                 .AddCustomAuthentiation(configuration);
@@ -108,6 +112,30 @@
         private static IServiceCollection AddConfigurations(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<TokenSettings>(configuration.GetSection(nameof(TokenSettings)));
+
+            return services;
+        }
+
+        public static IServiceCollection AddRedis(this IServiceCollection services, IConfiguration configuration)
+        {
+            var redisSettings = configuration.GetSection(nameof(RedisSettings)).Get<RedisSettings>();
+            services.Configure<RedisSettings>(configuration.GetSection(nameof(RedisSettings)));
+
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = redisSettings!.ConnectionString;
+                options.InstanceName = redisSettings.InstanceName;
+            });
+
+            services.AddSingleton<IConnectionMultiplexer>(sp =>
+                ConnectionMultiplexer.Connect(redisSettings!.ConnectionString));
+
+            services.AddSingleton<ICacheService, RedisCacheService>();
+
+            services.AddSignalR().AddStackExchangeRedis(redisSettings!.ConnectionString, options =>
+            {
+                options.Configuration.ChannelPrefix = "StockHub";
+            });
 
             return services;
         }
