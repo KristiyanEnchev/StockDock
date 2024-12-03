@@ -20,7 +20,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Handlers\Stocks\Commands\" />
 	  <Folder Include="Handlers\Stocks\Queries\" />
 	</ItemGroup>
 
