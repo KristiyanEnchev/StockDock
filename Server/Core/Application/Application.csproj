@@ -19,4 +19,9 @@
 	  <ProjectReference Include="..\..\Shared\Shared\Shared.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Handlers\Stocks\Commands\" />
+	  <Folder Include="Handlers\Stocks\Queries\" />
+	</ItemGroup>
+
 </Project>
