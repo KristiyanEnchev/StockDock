@@ -20,21 +20,32 @@
     {
         private readonly IRepository<Stock> _stockRepository;
         private readonly ILogger<StockService> _logger;
+        private readonly ICacheService _cache;
 
         public StockService(
             IRepository<Stock> stockRepository,
-            ILogger<StockService> logger)
+            ILogger<StockService> logger,
+            ICacheService cache)
         {
             _stockRepository = stockRepository;
             _logger = logger;
+            _cache = cache;
         }
 
         public async Task<Result<StockDto>> GetStockBySymbolAsync(string symbol)
         {
             try
             {
+                var cached = await _cache.GetAsync<StockDto>($"stock:{symbol}");
+                if (cached != null)
+                {
+                    return Result<StockDto>.SuccessResult(cached);
+                }
+
                 var stock = await _stockRepository.FirstOrDefaultAsync<StockDto>(s => s.Symbol == symbol)
                     ?? throw new CustomException($"Stock with symbol {symbol} not found.");
+
+                await _cache.SetAsync($"stock:{symbol}", stock, TimeSpan.FromMinutes(5));
 
                 return Result<StockDto>.SuccessResult(stock);
             }
@@ -49,7 +60,16 @@
         {
             try
             {
+                var cached = await _cache.GetAsync<IReadOnlyList<StockDto>>($"stock:all");
+                if (cached != null)
+                {
+                    return Result<IReadOnlyList<StockDto>>.SuccessResult(cached);
+                }
+
                 var stocks = await _stockRepository.GetAllAsync<StockDto>();
+
+                await _cache.SetAsync($"stock:all", stocks, TimeSpan.FromMinutes(5));
+
                 return Result<IReadOnlyList<StockDto>>.SuccessResult(stocks);
             }
             catch (Exception ex)
@@ -92,11 +112,19 @@
         {
             try
             {
+                var cached = await _cache.GetAsync<IReadOnlyList<StockDto>>($"stock:{symbols}");
+                if (cached != null)
+                {
+                    return Result<IReadOnlyList<StockDto>>.SuccessResult(cached);
+                }
+
                 var stocks = await _stockRepository
                     .AsNoTracking()
                     .Where(s => symbols.Contains(s.Symbol))
                     .ProjectToType<StockDto>()
                     .ToListAsync();
+
+                await _cache.SetAsync($"stock:{symbols}", stocks, TimeSpan.FromMinutes(5));
 
                 return Result<IReadOnlyList<StockDto>>.SuccessResult(stocks);
             }
