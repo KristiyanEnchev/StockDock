@@ -9,6 +9,7 @@
 
     using Application.Interfaces;
     using Application.Handlers.Stocks.Commands;
+    using Application.Handlers.Stocks.Queries;
 
     [Authorize]
     public class StockSubscriptionsController : ApiController
