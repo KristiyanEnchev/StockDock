@@ -1,12 +1,44 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Web.Controllers.Stock
+﻿namespace Web.Controllers.Stock
 {
-    internal class StockSubscriptionsController
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Authorization;
+
+    using Shared;
+
+    using Web.Extensions;
+
+    using Application.Interfaces;
+    using Application.Handlers.Stocks.Commands;
+
+    [Authorize]
+    public class StockSubscriptionsController : ApiController
     {
+        private readonly IUser _currentUser;
+
+        public StockSubscriptionsController(IUser currentUser)
+        {
+            _currentUser = currentUser;
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<Result<IReadOnlyList<string>>>> GetMySubscriptions()
+        {
+            return await Mediator.Send(new GetActiveSubscriptionsQuery(_currentUser.Id!))
+                .ToActionResult();
+        }
+
+        [HttpPost("{symbol}/subscribe")]
+        public async Task<ActionResult<Result<bool>>> Subscribe(string symbol)
+        {
+            return await Mediator.Send(new SubscribeToStockCommand(_currentUser.Id!, symbol))
+                .ToActionResult();
+        }
+
+        [HttpPost("{symbol}/unsubscribe")]
+        public async Task<ActionResult<Result<bool>>> Unsubscribe(string symbol)
+        {
+            return await Mediator.Send(new UnsubscribeFromStockCommand(_currentUser.Id!, symbol))
+                .ToActionResult();
+        }
     }
 }
