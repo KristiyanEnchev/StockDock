@@ -22,6 +22,25 @@
                 .ToActionResult();
         }
 
+        [HttpGet("{symbol}/history")]
+        public async Task<ActionResult<Result<IReadOnlyList<StockPriceHistoryDto>>>> GetHistory(
+            string symbol,
+            [FromQuery] DateTime from,
+            [FromQuery] DateTime to)
+        {
+            return await Mediator.Send(new GetStockHistoryQuery(symbol, from, to))
+                .ToActionResult();
+        }
+
+        [HttpGet("{symbol}/indicators")]
+        public async Task<ActionResult<Result<TechnicalIndicatorsDto>>> GetIndicators(
+            string symbol,
+            [FromQuery] string[] indicators)
+        {
+            return await Mediator.Send(new GetTechnicalIndicatorsQuery(symbol, indicators))
+                .ToActionResult();
+        }
+
         [HttpPut("{symbol}/price")]
         [Authorize(Roles = "Administrator")]
         public async Task<ActionResult<Result<StockDto>>> UpdatePrice(
@@ -29,6 +48,14 @@
             [FromBody] decimal newPrice)
         {
             return await Mediator.Send(new UpdateStockPriceCommand(symbol, newPrice))
+                .ToActionResult();
+        }
+
+        [HttpPost("sync")]
+        [Authorize(Roles = "Administrator")]
+        public async Task<ActionResult<Result<int>>> SyncExternalPrices()
+        {
+            return await Mediator.Send(new SyncExternalPricesCommand())
                 .ToActionResult();
         }
     }
