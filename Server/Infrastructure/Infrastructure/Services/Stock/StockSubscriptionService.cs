@@ -3,13 +3,13 @@
     using Microsoft.Extensions.Logging;
     using Microsoft.EntityFrameworkCore;
 
-    using Application.Interfaces;
-
     using Domain.Entities;
 
+    using Shared;
     using Shared.Interfaces;
 
-    using Shared;
+    using Application.Interfaces.Stock;
+    using Application.Interfaces.Subscription;
 
     public class StockSubscriptionService : IStockSubscriptionService
     {

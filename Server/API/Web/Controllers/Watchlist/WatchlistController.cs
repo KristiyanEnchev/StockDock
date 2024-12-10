@@ -1,9 +1,7 @@
-﻿namespace Web.Controllers.Stock
+﻿namespace Web.Controllers.Watchlist
 {
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Authorization;
-
-    using Application.Interfaces;
 
     using Models.Stock;
 
@@ -11,8 +9,9 @@
 
     using Web.Extensions;
 
-    using Application.Handlers.Stocks.Commands;
-    using Application.Handlers.Stocks.Queries;
+    using Application.Handlers.Watchlist.Commands;
+    using Application.Handlers.Watchlist.Queries;
+    using Application.Interfaces.Identity;
 
     [Authorize]
     public class WatchlistController : ApiController

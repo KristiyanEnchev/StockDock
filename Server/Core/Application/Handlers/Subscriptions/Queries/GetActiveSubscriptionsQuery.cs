@@ -4,9 +4,8 @@
 
     using MediatR;
 
-    using Application.Interfaces;
-
     using Shared;
+    using Application.Interfaces.Subscription;
 
     public record GetActiveSubscriptionsQuery(string UserId) : IRequest<Result<IReadOnlyList<string>>>;
 

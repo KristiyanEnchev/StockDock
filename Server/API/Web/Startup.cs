@@ -11,7 +11,6 @@
     using Microsoft.AspNetCore.Server.Kestrel.Https;
 
     using Application;
-    using Application.Interfaces;
 
     using Web.Services;
     using Web.Extensions.Swagger;
@@ -22,6 +21,7 @@
 
     using Persistence;
     using Persistence.Context;
+    using Application.Interfaces.Identity;
 
     public static class Startup
     {

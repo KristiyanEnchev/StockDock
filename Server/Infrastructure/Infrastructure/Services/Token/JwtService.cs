@@ -13,8 +13,7 @@
     using Models;
 
     using Shared.Exceptions;
-
-    using Application.Interfaces;
+    using Application.Interfaces.Identity;
 
     public class JwtService : IJwtService
     {

@@ -1,4 +1,4 @@
-﻿namespace Application.Interfaces
+﻿namespace Application.Interfaces.Stock
 {
     public interface IStockPriceUpdateService
     {

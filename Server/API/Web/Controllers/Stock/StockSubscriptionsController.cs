@@ -6,10 +6,9 @@
     using Shared;
 
     using Web.Extensions;
-
-    using Application.Interfaces;
-    using Application.Handlers.Stocks.Commands;
-    using Application.Handlers.Stocks.Queries;
+    using Application.Handlers.Subscriptions.Commands;
+    using Application.Handlers.Subscriptions.Queries;
+    using Application.Interfaces.Identity;
 
     [Authorize]
     public class StockSubscriptionsController : ApiController

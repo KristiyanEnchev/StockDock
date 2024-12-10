@@ -4,7 +4,7 @@
 
     using Microsoft.Extensions.Logging;
 
-    using Application.Interfaces;
+    using Application.Interfaces.Stock;
 
     public class StockPriceUpdateService : IStockPriceUpdateService
     {

@@ -10,8 +10,7 @@
     using Shared;
 
     using Models.User;
-
-    using Application.Interfaces;
+    using Application.Interfaces.Identity;
 
     public class UserRefreshCommand : UserRefreshModel, IRequest<Result<UserResponseModel>>
     {

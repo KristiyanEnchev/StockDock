@@ -2,12 +2,11 @@
 {
     using Microsoft.Extensions.Logging;
 
-    using Application.Interfaces;
-
     using MediatR;
 
     using Shared;
     using Shared.Exceptions;
+    using Application.Interfaces.Identity;
 
     public record ReactivateUserCommand(string UserId) : IRequest<Result<bool>>
     {

@@ -2,14 +2,13 @@
 {
     using Microsoft.Extensions.Logging;
 
-    using Application.Interfaces;
-
     using MediatR;
 
     using Models.User;
 
     using Shared;
     using Shared.Exceptions;
+    using Application.Interfaces.Identity;
 
     public record GetUserByIdQuery(string UserId) : IRequest<Result<UserDto>>
     {

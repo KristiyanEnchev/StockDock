@@ -7,9 +7,8 @@
 
     using Models.User;
 
-    using Application.Interfaces;
-
     using Shared;
+    using Application.Interfaces.Identity;
 
     public class UserLogoutCommand : UserLogoutModel, IRequest<Result<string>>
     {

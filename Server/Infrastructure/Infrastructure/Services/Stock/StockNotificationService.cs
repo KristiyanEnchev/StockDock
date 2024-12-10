@@ -3,9 +3,9 @@
     using Microsoft.AspNetCore.SignalR;
     using Microsoft.Extensions.Logging;
 
-    using Application.Interfaces;
-
     using Models.Stock;
+
+    using Application.Interfaces.Stock;
 
     public class StockNotificationService : IStockNotificationService
     {

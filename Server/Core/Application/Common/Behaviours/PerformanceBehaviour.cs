@@ -5,8 +5,7 @@
     using Microsoft.Extensions.Logging;
 
     using MediatR;
-
-    using Application.Interfaces;
+    using Application.Interfaces.Identity;
 
     public class PerformanceBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : notnull
     {

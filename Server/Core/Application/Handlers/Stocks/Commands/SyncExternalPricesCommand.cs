@@ -4,9 +4,8 @@
 
     using MediatR;
 
-    using Application.Interfaces;
-
     using Shared;
+    using Application.Interfaces.Stock;
 
     public record SyncExternalPricesCommand : IRequest<Result<int>>;
 

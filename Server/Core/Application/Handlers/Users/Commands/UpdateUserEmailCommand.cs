@@ -2,14 +2,13 @@
 {
     using Microsoft.Extensions.Logging;
 
-    using Application.Interfaces;
-
     using MediatR;
 
     using Shared;
     using Shared.Exceptions;
 
     using Models.User;
+    using Application.Interfaces.Identity;
 
     public record UpdateUserEmailCommand(string UserId, string NewEmail, string CurrentPassword) 
         : IRequest<Result<string>>

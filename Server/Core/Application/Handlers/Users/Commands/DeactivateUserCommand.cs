@@ -4,10 +4,9 @@
 
     using MediatR;
 
-    using Application.Interfaces;
-
     using Shared;
     using Shared.Exceptions;
+    using Application.Interfaces.Identity;
 
     public record DeactivateUserCommand(string UserId) : IRequest<Result<bool>>
     {

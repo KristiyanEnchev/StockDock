@@ -6,13 +6,12 @@
     using Microsoft.Extensions.Options;
     using Microsoft.Extensions.Logging;
 
+    using Models;
     using Models.Stock;
 
     using Shared;
 
-    using Models;
-
-    using Application.Interfaces;
+    using Application.Interfaces.Stock;
 
     public class AlphaVantageClient : IExternalStockApi
     {

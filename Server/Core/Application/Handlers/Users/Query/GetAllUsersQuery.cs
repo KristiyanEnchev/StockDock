@@ -2,13 +2,12 @@
 {
     using Microsoft.Extensions.Logging;
 
-    using Application.Interfaces;
-
     using MediatR;
 
     using Models.User;
 
     using Shared;
+    using Application.Interfaces.Identity;
 
     public record GetAllUsersQuery : IRequest<Result<IReadOnlyList<UserDto>>>
     {

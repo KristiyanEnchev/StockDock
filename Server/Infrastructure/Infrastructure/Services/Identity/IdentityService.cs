@@ -11,9 +11,8 @@
 
     using Infrastructure.Services.Helpers;
 
-    using Application.Interfaces;
-
     using Models.User;
+    using Application.Interfaces.Identity;
 
     internal class IdentityService : IIdentityService
     {

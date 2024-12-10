@@ -23,8 +23,8 @@
     using Infrastructure.Services.Token;
     using Infrastructure.Services.Cache;
     using Infrastructure.Services.Identity;
-
-    using Application.Interfaces;
+    using Application.Interfaces.Cache;
+    using Application.Interfaces.Identity;
 
     public static class Startup
     {

@@ -7,9 +7,9 @@
 
     using StackExchange.Redis;
 
-    using Application.Interfaces;
-
     using Models;
+
+    using Application.Interfaces.Cache;
 
     public class RedisCacheService : ICacheService
     {

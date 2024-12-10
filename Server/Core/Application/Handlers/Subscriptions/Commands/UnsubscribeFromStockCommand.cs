@@ -2,11 +2,10 @@
 {
     using Microsoft.Extensions.Logging;
 
-    using Application.Interfaces;
-
     using MediatR;
 
     using Shared;
+    using Application.Interfaces.Subscription;
 
     public record UnsubscribeFromStockCommand(string UserId, string Symbol) : IRequest<Result<bool>>;
 

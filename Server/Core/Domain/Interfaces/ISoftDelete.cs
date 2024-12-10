@@ -4,6 +4,6 @@
     {
         bool IsDeleted { get; set; }
         string? DeletedBy { get; set; }
-        DateTimeOffset? DeletedDate { get; set; }
+        DateTime? DeletedDate { get; set; }
     }
 }

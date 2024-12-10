@@ -7,13 +7,13 @@
 
     using Domain.Entities;
 
-    using Application.Interfaces;
-
     using Models.Stock;
 
     using Shared;
     using Shared.Interfaces;
     using Shared.Exceptions;
+
+    using Application.Interfaces.Watchlist;
 
     public class WatchlistService : IWatchlistService
     {

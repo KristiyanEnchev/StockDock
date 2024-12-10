@@ -8,8 +8,7 @@
     using Shared;
 
     using Models.User;
-
-    using Application.Interfaces;
+    using Application.Interfaces.Identity;
 
     public class UserRegisterCommand : UserRegisterRequestModel, IRequest<Result<string>>
     {

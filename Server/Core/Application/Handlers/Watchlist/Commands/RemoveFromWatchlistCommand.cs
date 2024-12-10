@@ -2,11 +2,10 @@
 {
     using Microsoft.Extensions.Logging;
 
-    using Application.Interfaces;
-
     using MediatR;
 
     using Shared;
+    using Application.Interfaces.Watchlist;
 
     public record RemoveFromWatchlistCommand(string UserId, string Symbol) : IRequest<Result<bool>>;
 

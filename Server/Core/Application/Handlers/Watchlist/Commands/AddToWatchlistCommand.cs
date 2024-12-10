@@ -4,11 +4,10 @@
 
     using MediatR;
 
-    using Application.Interfaces;
-
     using Models.Stock;
 
     using Shared;
+    using Application.Interfaces.Watchlist;
 
     public record AddToWatchlistCommand(string UserId, CreateWatchlistItemRequest Request)
         : IRequest<Result<UserWatchlistDto>>;

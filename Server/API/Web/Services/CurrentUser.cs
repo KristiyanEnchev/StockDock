@@ -3,8 +3,7 @@
     using System.Security.Claims;
 
     using Microsoft.AspNetCore.Http;
-
-    using Application.Interfaces;
+    using Application.Interfaces.Identity;
 
     public class CurrentUser : IUser
     {

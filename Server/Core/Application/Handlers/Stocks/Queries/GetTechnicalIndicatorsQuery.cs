@@ -4,11 +4,10 @@
 
     using MediatR;
 
-    using Application.Interfaces;
-
     using Models.Stock;
 
     using Shared;
+    using Application.Interfaces.Stock;
 
     public record GetTechnicalIndicatorsQuery(string Symbol, string[] Indicators)
         : IRequest<Result<TechnicalIndicatorsDto>>;

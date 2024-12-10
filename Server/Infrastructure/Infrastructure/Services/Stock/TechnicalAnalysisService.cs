@@ -3,8 +3,6 @@
     using Microsoft.Extensions.Logging;
     using Microsoft.EntityFrameworkCore;
 
-    using Application.Interfaces;
-
     using Domain.Entities;
 
     using Models.Stock;
@@ -12,6 +10,9 @@
     using Shared.Interfaces;
 
     using Mapster;
+
+    using Application.Interfaces.Stock;
+    using Application.Interfaces.Cache;
 
     public class TechnicalAnalysisService : ITechnicalAnalysisService
     {

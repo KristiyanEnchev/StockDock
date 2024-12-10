@@ -4,7 +4,7 @@
     using Microsoft.Extensions.Logging;
     using Microsoft.AspNetCore.Authorization;
 
-    using Application.Interfaces;
+    using Application.Interfaces.Stock;
 
     [Authorize]
     public class StockHub : Hub<IStockHub>

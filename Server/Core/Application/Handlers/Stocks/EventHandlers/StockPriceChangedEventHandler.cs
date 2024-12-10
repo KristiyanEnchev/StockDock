@@ -8,9 +8,8 @@
     using Domain.Events;
     using Domain.Entities;
 
-    using Application.Interfaces;
-
     using Shared.Interfaces;
+    using Application.Interfaces.Stock;
 
     public class StockPriceChangedEventHandler : INotificationHandler<StockPriceChangedEvent>
     {

@@ -8,13 +8,14 @@
     using Domain.Entities;
     using Domain.Events;
 
-    using Application.Interfaces;
-
     using Models.Stock;
 
     using Shared;
     using Shared.Interfaces;
     using Shared.Exceptions;
+
+    using Application.Interfaces.Stock;
+    using Application.Interfaces.Cache;
 
     public class StockService : IStockService
     {
