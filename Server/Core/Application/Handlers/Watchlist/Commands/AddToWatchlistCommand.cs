@@ -1,4 +1,4 @@
-﻿namespace Application.Handlers.Stocks.Commands
+﻿namespace Application.Handlers.Watchlist.Commands
 {
     using Microsoft.Extensions.Logging;
 

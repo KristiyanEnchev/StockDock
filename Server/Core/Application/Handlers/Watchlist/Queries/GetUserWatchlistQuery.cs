@@ -1,4 +1,4 @@
-﻿namespace Application.Handlers.Stocks.Queries
+﻿namespace Application.Handlers.Watchlist.Queries
 {
     using Microsoft.Extensions.Logging;
 
