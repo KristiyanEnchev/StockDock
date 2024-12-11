@@ -20,6 +20,37 @@
             _logger = logger;
         }
 
+        public async Task NotifyAlertTriggeredAsync(
+            string userId,
+            string symbol,
+            string message,
+            string channel)
+        {
+            try
+            {
+                switch (channel.ToLower())
+                {
+                    case "signalr":
+                        await _hubContext.Clients.User(userId)
+                            .ReceiveAlert($"Alert: {message}");
+                        break;
+
+                    default:
+                        _logger.LogWarning(
+                            "Unsupported notification channel {Channel} for user {UserId}",
+                            channel, userId);
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,
+                    "Error sending notification to user {UserId} via {Channel}",
+                    userId, channel);
+                throw;
+            }
+        }
+
         public async Task NotifyPriceChangeAsync(string symbol, decimal oldPrice, decimal newPrice)
         {
             try
@@ -31,15 +62,23 @@
                     Timestamp = DateTime.UtcNow
                 };
 
-                await _hubContext.Clients.Group(symbol).ReceivePriceUpdate(update);
+                await _hubContext.Clients.Group(symbol)
+                    .ReceivePriceUpdate(update);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error notifying price change for {Symbol}", symbol);
+                _logger.LogError(ex,
+                    "Error broadcasting price change for {Symbol}",
+                    symbol);
+                throw;
             }
         }
 
-        public async Task NotifyPriceAlertAsync(string userId, string symbol, decimal price, bool isAboveAlert)
+        public async Task NotifyPriceAlertAsync(
+            string userId,
+            string symbol,
+            decimal price,
+            bool isAboveAlert)
         {
             try
             {
@@ -47,11 +86,15 @@
                     ? $"{symbol} price is above your alert: {price:C}"
                     : $"{symbol} price is below your alert: {price:C}";
 
-                await _hubContext.Clients.User(userId).ReceiveAlert(message);
+                await _hubContext.Clients.User(userId)
+                    .ReceiveAlert(message);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error sending price alert to user {UserId} for {Symbol}", userId, symbol);
+                _logger.LogError(ex,
+                    "Error sending price alert to user {UserId} for {Symbol}",
+                    userId, symbol);
+                throw;
             }
         }
     }
