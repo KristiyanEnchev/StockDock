@@ -1,7 +1,5 @@
 ﻿namespace Domain.Events
 {
-    using Domain.Entities;
-
     public class StockPriceChangedEvent : BaseEvent
     {
         public string StockId { get; }

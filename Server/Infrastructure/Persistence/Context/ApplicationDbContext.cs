@@ -8,10 +8,12 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
-    using Domain.Entities;
-    using Domain.Interfaces;
-
     using Application.Interfaces.Identity;
+
+    using Domain.Interfaces;
+    using Domain.Entities.Base;
+    using Domain.Entities.Identity;
+    using Domain.Entities.Stock;
 
     public class ApplicationDbContext : IdentityDbContext<User, UserRole, string, IdentityUserClaim<string>, IdentityUserRole<string>, IdentityUserLogin<string>, IdentityRoleClaim<string>, IdentityUserToken<string>>
     {

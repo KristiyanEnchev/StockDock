@@ -1,6 +1,6 @@
 ﻿namespace Domain.Interfaces
 {
-    using Domain.Entities;
+    using Domain.Entities.Base;
 
     public interface IDomainEventDispatcher
     {

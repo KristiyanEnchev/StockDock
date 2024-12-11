@@ -1,19 +1,28 @@
+version: '3.8'
+
 services:
-  # Database
+  # Database (PostgreSQL)
   postgres:
     image: postgres
     container_name: postgres_container
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-admin}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
-      PGDATA: /postgresql/data
+      PGDATA: /var/lib/postgresql/data
     ports:
       - '5432:5432'
     restart: unless-stopped
     volumes:
-      - postgres_data:/var/lib/postgresql/data/
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-admin} -d postgres']
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
-  # PG Admin
+  # PGAdmin (Database UI)
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin
@@ -26,7 +35,60 @@ services:
       - '5050:80'
     volumes:
       - pgadmin_data:/root/.pgadmin
+    networks:
+      - app-network
+
+  # Redis Master
+  redis:
+    image: redis:latest
+    container_name: master
+    command: bash -c "redis-server --appendonly yes"
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis-data:/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # Redis Slave
+  redis-slave:
+    image: redis:latest
+    container_name: slave
+    ports:
+      - '6380:6379'
+    command: redis-server --replicaof master 6379
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  # Redis Commander (GUI)
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: redis-commander
+    environment:
+      - REDIS_HOSTS=master,slave
+      - REDIS_PORTS=6379,6380
+    ports:
+      - "8081:8081"
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - app-network
 
 volumes:
   postgres_data:
   pgadmin_data:
+  redis-data:
+    driver: local
+
+networks:
+  app-network:
+    driver: bridge

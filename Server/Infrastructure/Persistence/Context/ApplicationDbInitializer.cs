@@ -4,9 +4,8 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
 
-    using Domain.Entities;
-
     using Shared.Interfaces;
+    using Domain.Entities.Identity;
 
     public class ApplicationDbContextInitialiser
     {

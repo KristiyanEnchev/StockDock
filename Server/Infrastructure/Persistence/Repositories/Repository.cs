@@ -5,14 +5,13 @@
     using Microsoft.Extensions.Logging;
     using Microsoft.EntityFrameworkCore;
 
-    using Domain.Entities;
-
     using Mapster;
 
     using Persistence.Context;
 
     using Shared.Interfaces;
     using Domain.Interfaces;
+    using Domain.Entities.Base;
 
     public class Repository<TEntity> : IRepository<TEntity> where TEntity : BaseAuditableEntity
     {

@@ -1,8 +1,7 @@
 ﻿namespace Shared.Interfaces
 {
     using System.Linq.Expressions;
-
-    using Domain.Entities;
+    using Domain.Entities.Base;
 
     public interface IRepository<TEntity> where TEntity : BaseAuditableEntity
     {

@@ -10,7 +10,14 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.AspNetCore.Server.Kestrel.Https;
 
+    using StackExchange.Redis;
+
     using Application;
+    using Application.Interfaces.Cache;
+    using Application.Interfaces.Stock;
+    using Application.Interfaces.Identity;
+    using Application.Interfaces.Alerts;
+    using Application.Interfaces.Watchlist;
 
     using Web.Services;
     using Web.Extensions.Swagger;
@@ -18,10 +25,14 @@
     using Web.Extensions.Healtchecks;
 
     using Infrastructure;
+    using Infrastructure.Services.Cache;
+    using Infrastructure.Services.Stock;
+    using Infrastructure.Services.Alerts;
 
     using Persistence;
     using Persistence.Context;
-    using Application.Interfaces.Identity;
+
+    using Models;
 
     public static class Startup
     {
@@ -33,6 +44,7 @@
                 options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
             });
 
+            services.AddCustomSignalR(config);
             services.AddApplication();
             services.AddInfrastructure(config);
             services.AddPersistence(config);
@@ -44,6 +56,42 @@
 
             services.AddHealth(config);
             services.AddScoped<IUser, CurrentUser>();
+
+            services.AddHttpClient<IExternalStockApi, AlphaVantageClient>(client =>
+            {
+                client.BaseAddress = new Uri("https://www.alphavantage.co/");
+                client.DefaultRequestHeaders.Add("Accept", "application/json");
+                client.DefaultRequestHeaders.Add("User-Agent", "StockDock");
+            });
+
+            services.AddSingleton<ICacheService, RedisCacheService>();
+            services.AddScoped<IStockService, StockService>();
+            services.AddScoped<IWatchlistService, WatchlistService>();
+            services.AddScoped<IStockAlertService, StockAlertService>();
+            services.AddHostedService<StockUpdateService>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddCustomSignalR(this IServiceCollection services, IConfiguration config)
+        {
+            var redisSettings = config.GetSection(nameof(RedisSettings)).Get<RedisSettings>();
+            if (redisSettings == null)
+            {
+                throw new InvalidOperationException("Redis settings are not configured properly in appsettings.json");
+            }
+
+            services.AddSignalR(options =>
+            {
+                options.EnableDetailedErrors = true;
+                options.MaximumReceiveMessageSize = 32 * 1024;
+                options.ClientTimeoutInterval = TimeSpan.FromSeconds(30);
+                options.KeepAliveInterval = TimeSpan.FromSeconds(15);
+            })
+            .AddStackExchangeRedis(redisSettings.ConnectionString, options =>
+            {
+                options.Configuration.ChannelPrefix = "StockHub";
+            });
 
             return services;
         }
@@ -79,6 +127,8 @@
         {
             builder.ConfigureKestrel((context, serverOptions) =>
             {
+                serverOptions.ListenAnyIP(8080);
+
                 serverOptions.ConfigureHttpsDefaults(options =>
                 {
                     options.SslProtocols = SslProtocols.Tls12 | SslProtocols.Tls13;
@@ -98,7 +148,8 @@
                     .UseRouting()
                     .UseCors("CleanArchitecture")
                     .UseAuthentication()
-                    .UseAuthorization();
+                    .UseAuthorization()
+                    .UseEndpoints(endpoints => endpoints.MapEndpoints());
 
             return builder;
         }
@@ -118,10 +169,48 @@
             return services;
         }
 
+        private static IServiceCollection AddRedis(this IServiceCollection services, IConfiguration configuration)
+        {
+            var redisSettings = configuration.GetSection(nameof(RedisSettings)).Get<RedisSettings>();
+
+            if (redisSettings == null)
+            {
+                throw new InvalidOperationException("Redis settings are not configured properly in appsettings.json");
+            }
+
+            services.Configure<RedisSettings>(configuration.GetSection(nameof(RedisSettings)));
+
+            var multiplexer = ConnectionMultiplexer.Connect(new ConfigurationOptions
+            {
+                EndPoints = { redisSettings.ConnectionString },
+                AbortOnConnectFail = false,
+                ReconnectRetryPolicy = new ExponentialRetry(5000),
+                ConnectTimeout = 5000,
+                SyncTimeout = 5000,
+                DefaultDatabase = 0,
+                ResolveDns = true,
+                KeepAlive = 60,
+            });
+
+            services.AddSingleton<IConnectionMultiplexer>(multiplexer);
+
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = redisSettings.ConnectionString;
+                options.InstanceName = redisSettings.InstanceName;
+            });
+
+            services.AddSingleton<IConnectionMultiplexer>(sp =>
+                ConnectionMultiplexer.Connect(redisSettings.ConnectionString));
+
+            return services;
+        }
+
         public static IEndpointRouteBuilder MapEndpoints(this IEndpointRouteBuilder builder)
         {
             builder.MapControllers();
             builder.MapHealthCheck();
+            builder.MapHub<StockHub>("/hubs/stock");
 
             return builder;
         }

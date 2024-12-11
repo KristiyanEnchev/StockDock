@@ -7,12 +7,11 @@
 
     using Shared;
 
-    using Domain.Entities;
-
     using Infrastructure.Services.Helpers;
 
     using Models.User;
     using Application.Interfaces.Identity;
+    using Domain.Entities.Identity;
 
     internal class IdentityService : IIdentityService
     {

@@ -7,6 +7,7 @@
     using Models.Stock;
 
     using Shared;
+
     using Application.Interfaces.Stock;
 
     public record GetStockBySymbolQuery(string Symbol) : IRequest<Result<StockDto>>;

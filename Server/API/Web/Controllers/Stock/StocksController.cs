@@ -3,60 +3,41 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Authorization;
 
-    using Models.Stock;
-
-    using Shared;
+    using Application.Handlers.Stocks.Queries;
 
     using Web.Extensions;
-
-    using Application.Handlers.Stocks.Commands;
-    using Application.Handlers.Stocks.Queries;
 
     [Authorize]
     public class StocksController : ApiController
     {
         [HttpGet("{symbol}")]
-        public async Task<ActionResult<Result<StockDto>>> GetBySymbol(string symbol)
+        public async Task<ActionResult> GetStock(string symbol)
         {
-            return await Mediator.Send(new GetStockBySymbolQuery(symbol))
-                .ToActionResult();
+            return await Mediator.Send(new GetStockBySymbolQuery(symbol)).ToActionResult();
+        }
+
+        [HttpGet("search")]
+        public async Task<ActionResult> SearchStocks(
+            [FromQuery] string query,
+            [FromQuery] string? sortBy = null,
+            [FromQuery] bool ascending = true)
+        {
+            return await Mediator.Send(new SearchStocksQuery(query, sortBy, ascending)).ToActionResult();
+        }
+
+        [HttpGet("popular")]
+        public async Task<ActionResult> GetPopularStocks([FromQuery] int limit = 10)
+        {
+            return await Mediator.Send(new GetPopularStocksQuery(limit)).ToActionResult();
         }
 
         [HttpGet("{symbol}/history")]
-        public async Task<ActionResult<Result<IReadOnlyList<StockPriceHistoryDto>>>> GetHistory(
+        public async Task<ActionResult> GetStockHistory(
             string symbol,
             [FromQuery] DateTime from,
             [FromQuery] DateTime to)
         {
-            return await Mediator.Send(new GetStockHistoryQuery(symbol, from, to))
-                .ToActionResult();
-        }
-
-        [HttpGet("{symbol}/indicators")]
-        public async Task<ActionResult<Result<TechnicalIndicatorsDto>>> GetIndicators(
-            string symbol,
-            [FromQuery] string[] indicators)
-        {
-            return await Mediator.Send(new GetTechnicalIndicatorsQuery(symbol, indicators))
-                .ToActionResult();
-        }
-
-        [HttpPut("{symbol}/price")]
-        [Authorize(Roles = "Administrator")]
-        public async Task<ActionResult<Result<StockDto>>> UpdatePrice(
-            string symbol,
-            [FromBody] decimal newPrice)
-        {
-            return await Mediator.Send(new UpdateStockPriceCommand(symbol, newPrice))
-                .ToActionResult();
-        }
-
-        [HttpPost("sync")]
-        [Authorize(Roles = "Administrator")]
-        public async Task<ActionResult<Result<int>>> SyncExternalPrices()
-        {
-            return await Mediator.Send(new SyncExternalPricesCommand())
-                .ToActionResult();
+            return await Mediator.Send(new GetStockHistoryQuery(symbol, from, to)).ToActionResult();
         }
     }
 }

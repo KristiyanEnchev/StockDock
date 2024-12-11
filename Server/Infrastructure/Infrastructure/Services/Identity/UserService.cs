@@ -6,14 +6,13 @@
 
     using Mapster;
 
-    using Domain.Entities;
-
     using Models.User;
 
     using Shared;
     using Shared.Exceptions;
     using Shared.Interfaces;
     using Application.Interfaces.Identity;
+    using Domain.Entities.Identity;
 
     public class UserService : IUserService
     {

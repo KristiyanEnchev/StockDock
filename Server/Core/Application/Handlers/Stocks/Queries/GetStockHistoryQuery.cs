@@ -1,66 +1,42 @@
 ﻿namespace Application.Handlers.Stocks.Queries
 {
     using Microsoft.Extensions.Logging;
-    using Microsoft.EntityFrameworkCore;
 
     using MediatR;
 
-    using Domain.Entities;
-
     using Models.Stock;
+
     using Shared;
-    using Shared.Interfaces;
-    using Mapster;
 
-    public record GetStockHistoryQuery(string Symbol, DateTime From, DateTime To)
-        : IRequest<Result<IReadOnlyList<StockPriceHistoryDto>>>;
+    using Application.Interfaces.Stock;
 
-    public class GetStockHistoryQueryHandler
-        : IRequestHandler<GetStockHistoryQuery, Result<IReadOnlyList<StockPriceHistoryDto>>>
+    public record GetStockHistoryQuery(
+        string Symbol,
+        DateTime From,
+        DateTime To) : IRequest<Result<List<StockPriceHistoryDto>>>;
+
+    public class GetStockHistoryQueryHandler : IRequestHandler<GetStockHistoryQuery, Result<List<StockPriceHistoryDto>>>
     {
-        private readonly IRepository<StockPriceHistory> _historyRepository;
-        private readonly IRepository<Stock> _stockRepository;
+        private readonly IStockService _stockService;
         private readonly ILogger<GetStockHistoryQueryHandler> _logger;
 
         public GetStockHistoryQueryHandler(
-            IRepository<StockPriceHistory> historyRepository,
-            IRepository<Stock> stockRepository,
+            IStockService stockService,
             ILogger<GetStockHistoryQueryHandler> logger)
         {
-            _historyRepository = historyRepository;
-            _stockRepository = stockRepository;
+            _stockService = stockService;
             _logger = logger;
         }
 
-        public async Task<Result<IReadOnlyList<StockPriceHistoryDto>>> Handle(
-            GetStockHistoryQuery request,
-            CancellationToken cancellationToken)
+        public async Task<Result<List<StockPriceHistoryDto>>> Handle(GetStockHistoryQuery request, CancellationToken cancellationToken)
         {
             try
             {
-                var stock = await _stockRepository.AsNoTracking()
-                    .FirstOrDefaultAsync(s => s.Symbol == request.Symbol);
-
-                if (stock == null)
-                {
-                    return Result<IReadOnlyList<StockPriceHistoryDto>>
-                        .Failure($"Stock with symbol {request.Symbol} not found.");
-                }
-
-                var history = await _historyRepository
-                    .AsNoTracking()
-                    .Where(h => h.StockId == stock.Id
-                           && h.Timestamp >= request.From
-                           && h.Timestamp <= request.To)
-                    .OrderBy(h => h.Timestamp)
-                    .ProjectToType<StockPriceHistoryDto>()
-                    .ToListAsync(cancellationToken);
-
-                return Result<IReadOnlyList<StockPriceHistoryDto>>.SuccessResult(history);
+                return await _stockService.GetStockHistoryAsync(request.Symbol, request.From, request.To);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error getting history for stock {Symbol}", request.Symbol);
+                _logger.LogError(ex, "Error getting stock history for symbol {Symbol}", request.Symbol);
                 throw;
             }
         }

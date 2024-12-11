@@ -1,9 +1,8 @@
 ﻿namespace Domain.Events
 {
     using MediatR;
-
-    using Domain.Entities;
     using Domain.Interfaces;
+    using Domain.Entities.Base;
 
     public class DomainEventDispatcher : IDomainEventDispatcher
     {

@@ -2,8 +2,7 @@
 {
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
-    using Domain.Entities;
+    using Domain.Entities.Identity;
 
     public class UserConfiguration : IEntityTypeConfiguration<User>
     {

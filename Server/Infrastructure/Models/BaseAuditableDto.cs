@@ -1,6 +1,6 @@
 ﻿namespace Models
 {
-    using Domain.Entities;
+    using Domain.Entities.Base;
 
     public abstract class BaseAuditableDto<TDto, TEntity> : BaseDto<TDto, TEntity>
         where TDto : class, new()

@@ -3,7 +3,7 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-    using Domain.Entities;
+    using Domain.Entities.Stock;
 
     public class StockConfiguration : IEntityTypeConfiguration<Stock>
     {
@@ -13,10 +13,6 @@
 
             builder.Property(s => s.Symbol)
                 .HasMaxLength(20)
-                .IsRequired();
-
-            builder.Property(s => s.Name)
-                .HasMaxLength(100)
                 .IsRequired();
 
             builder.Property(s => s.CurrentPrice)

@@ -4,9 +4,8 @@
 
     public interface IStockHub
     {
-        Task SubscribeToStock(string symbol);
-        Task UnsubscribeFromStock(string symbol);
-        Task ReceivePriceUpdate(StockPriceDto priceUpdate);
-        Task ReceiveAlert(string message);
+        Task ReceiveStockPriceUpdate(StockDto update);
+        Task ReceiveAlertTriggered(StockAlertDto alert);
+        Task ReceivePopularStocksUpdate(List<StockDto> stocks);
     }
 }

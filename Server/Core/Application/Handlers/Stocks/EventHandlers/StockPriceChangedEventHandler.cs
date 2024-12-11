@@ -1,66 +1,41 @@
 ﻿namespace Application.Handlers.Stocks.EventHandlers
 {
+    using System.Threading;
+    using System.Threading.Tasks;
+
     using Microsoft.Extensions.Logging;
-    using Microsoft.EntityFrameworkCore;
 
     using MediatR;
 
     using Domain.Events;
-    using Domain.Entities;
 
-    using Shared.Interfaces;
-    using Application.Interfaces.Stock;
+    using Application.Interfaces.Alerts;
 
     public class StockPriceChangedEventHandler : INotificationHandler<StockPriceChangedEvent>
     {
-        private readonly IRepository<UserWatchlist> _watchlistRepository;
-        private readonly IStockNotificationService _notificationService;
+        private readonly IStockAlertService _alertService;
         private readonly ILogger<StockPriceChangedEventHandler> _logger;
 
         public StockPriceChangedEventHandler(
-            IRepository<UserWatchlist> watchlistRepository,
-            IStockNotificationService notificationService,
+            IStockAlertService alertService,
             ILogger<StockPriceChangedEventHandler> logger)
         {
-            _watchlistRepository = watchlistRepository;
-            _notificationService = notificationService;
+            _alertService = alertService;
             _logger = logger;
         }
 
         public async Task Handle(StockPriceChangedEvent notification, CancellationToken cancellationToken)
         {
-            try
-            {
-                var watchlistItems = await _watchlistRepository
-                    .AsNoTracking()
-                    .Include(w => w.Stock)
-                    .Where(w => w.StockId == notification.StockId)
-                    .ToListAsync(cancellationToken);
+            _logger.LogInformation(
+                "Stock {StockId} price changed from {OldPrice} to {NewPrice}",
+                notification.StockId,
+                notification.OldPrice,
+                notification.NewPrice);
 
-                foreach (var item in watchlistItems)
-                {
-                    if (item.AlertAbove.HasValue && notification.NewPrice > item.AlertAbove.Value)
-                    {
-                        await _notificationService.NotifyPriceAlertAsync(
-                            item.UserId,
-                            item.Stock.Symbol,
-                            notification.NewPrice,
-                            true);
-                    }
-                    else if (item.AlertBelow.HasValue && notification.NewPrice < item.AlertBelow.Value)
-                    {
-                        await _notificationService.NotifyPriceAlertAsync(
-                            item.UserId,
-                            item.Stock.Symbol,
-                            notification.NewPrice,
-                            false);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error processing stock price change notification for stock {StockId}", notification.StockId);
-            }
+            await _alertService.ProcessStockPriceChange(
+                notification.StockId,
+                notification.OldPrice,
+                notification.NewPrice);
         }
     }
 }

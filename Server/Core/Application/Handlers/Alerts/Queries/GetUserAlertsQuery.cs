@@ -6,13 +6,13 @@
 
     using Shared;
 
-    using Models.Alerts;
-
     using Application.Interfaces.Alerts;
 
-    public record GetUserAlertsQuery(string UserId) : IRequest<Result<IReadOnlyList<StockAlertDto>>>;
+    using Models.Stock;
 
-    public class GetUserAlertsQueryHandler : IRequestHandler<GetUserAlertsQuery, Result<IReadOnlyList<StockAlertDto>>>
+    public record GetUserAlertsQuery(string UserId) : IRequest<Result<List<StockAlertDto>>>;
+
+    public class GetUserAlertsQueryHandler : IRequestHandler<GetUserAlertsQuery, Result<List<StockAlertDto>>>
     {
         private readonly IStockAlertService _alertService;
         private readonly ILogger<GetUserAlertsQueryHandler> _logger;
@@ -23,7 +23,7 @@
             _logger = logger;
         }
 
-        public async Task<Result<IReadOnlyList<StockAlertDto>>> Handle(GetUserAlertsQuery request, CancellationToken cancellationToken)
+        public async Task<Result<List<StockAlertDto>>> Handle(GetUserAlertsQuery request, CancellationToken cancellationToken)
         {
             try
             {

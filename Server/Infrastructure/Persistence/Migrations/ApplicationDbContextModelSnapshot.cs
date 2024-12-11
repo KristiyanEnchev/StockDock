@@ -22,7 +22,7 @@ namespace Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Domain.Entities.User", b =>
+            modelBuilder.Entity("Domain.Entities.Identity.User", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text")
@@ -41,7 +41,7 @@ namespace Persistence.Migrations
                         .HasColumnType("text")
                         .HasColumnName("created_by");
 
-                    b.Property<DateTimeOffset?>("CreatedDate")
+                    b.Property<DateTime?>("CreatedDate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_date");
 
@@ -49,7 +49,7 @@ namespace Persistence.Migrations
                         .HasColumnType("text")
                         .HasColumnName("deleted_by");
 
-                    b.Property<DateTimeOffset?>("DeletedDate")
+                    b.Property<DateTime?>("DeletedDate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("deleted_date");
 
@@ -127,7 +127,7 @@ namespace Persistence.Migrations
                         .HasColumnType("text")
                         .HasColumnName("updated_by");
 
-                    b.Property<DateTimeOffset?>("UpdatedDate")
+                    b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_date");
 
@@ -149,7 +149,7 @@ namespace Persistence.Migrations
                     b.ToTable("users", "Identity");
                 });
 
-            modelBuilder.Entity("Domain.Entities.UserRole", b =>
+            modelBuilder.Entity("Domain.Entities.Identity.UserRole", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text")
@@ -165,7 +165,7 @@ namespace Persistence.Migrations
                         .HasColumnType("character varying(256)")
                         .HasColumnName("created_by");
 
-                    b.Property<DateTimeOffset?>("CreatedDate")
+                    b.Property<DateTime?>("CreatedDate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_date");
 
@@ -191,7 +191,7 @@ namespace Persistence.Migrations
                         .HasColumnType("character varying(256)")
                         .HasColumnName("updated_by");
 
-                    b.Property<DateTimeOffset?>("UpdatedDate")
+                    b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_date");
 
@@ -203,6 +203,269 @@ namespace Persistence.Migrations
                         .HasDatabaseName("role_name_index");
 
                     b.ToTable("roles", "Identity");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Stock.Stock", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text")
+                        .HasColumnName("id");
+
+                    b.Property<string>("CompanyName")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("company_name");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_date");
+
+                    b.Property<decimal>("CurrentPrice")
+                        .HasPrecision(18, 6)
+                        .HasColumnType("numeric(18,6)")
+                        .HasColumnName("current_price");
+
+                    b.Property<decimal>("DayHigh")
+                        .HasPrecision(18, 6)
+                        .HasColumnType("numeric(18,6)")
+                        .HasColumnName("day_high");
+
+                    b.Property<decimal>("DayLow")
+                        .HasPrecision(18, 6)
+                        .HasColumnType("numeric(18,6)")
+                        .HasColumnName("day_low");
+
+                    b.Property<DateTime>("LastUpdated")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_updated");
+
+                    b.Property<decimal>("OpenPrice")
+                        .HasPrecision(18, 6)
+                        .HasColumnType("numeric(18,6)")
+                        .HasColumnName("open_price");
+
+                    b.Property<int>("PopularityScore")
+                        .HasColumnType("integer")
+                        .HasColumnName("popularity_score");
+
+                    b.Property<decimal>("PreviousClose")
+                        .HasPrecision(18, 6)
+                        .HasColumnType("numeric(18,6)")
+                        .HasColumnName("previous_close");
+
+                    b.Property<string>("Symbol")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("symbol");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text")
+                        .HasColumnName("updated_by");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_date");
+
+                    b.Property<long>("Volume")
+                        .HasColumnType("bigint")
+                        .HasColumnName("volume");
+
+                    b.HasKey("Id")
+                        .HasName("pk_stocks");
+
+                    b.HasIndex("Symbol")
+                        .IsUnique()
+                        .HasDatabaseName("ix_stocks_symbol");
+
+                    b.ToTable("stocks", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.Stock.StockAlert", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text")
+                        .HasColumnName("id");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_date");
+
+                    b.Property<bool>("IsTriggered")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_triggered");
+
+                    b.Property<DateTime?>("LastTriggeredAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_triggered_at");
+
+                    b.Property<string>("StockId")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("stock_id");
+
+                    b.Property<decimal>("Threshold")
+                        .HasColumnType("numeric")
+                        .HasColumnName("threshold");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer")
+                        .HasColumnName("type");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text")
+                        .HasColumnName("updated_by");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_date");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_stock_alert");
+
+                    b.HasIndex("StockId")
+                        .HasDatabaseName("ix_stock_alert_stock_id");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_stock_alert_user_id");
+
+                    b.ToTable("stock_alert");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Stock.StockPriceHistory", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text")
+                        .HasColumnName("id");
+
+                    b.Property<decimal>("Close")
+                        .HasColumnType("numeric")
+                        .HasColumnName("close");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_date");
+
+                    b.Property<decimal>("High")
+                        .HasColumnType("numeric")
+                        .HasColumnName("high");
+
+                    b.Property<decimal>("Low")
+                        .HasColumnType("numeric")
+                        .HasColumnName("low");
+
+                    b.Property<decimal>("Open")
+                        .HasColumnType("numeric")
+                        .HasColumnName("open");
+
+                    b.Property<string>("StockId")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("stock_id");
+
+                    b.Property<string>("StockId1")
+                        .HasColumnType("text")
+                        .HasColumnName("stock_id1");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("timestamp");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text")
+                        .HasColumnName("updated_by");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_date");
+
+                    b.Property<long>("Volume")
+                        .HasColumnType("bigint")
+                        .HasColumnName("volume");
+
+                    b.HasKey("Id")
+                        .HasName("pk_stock_price_histories");
+
+                    b.HasIndex("StockId1")
+                        .HasDatabaseName("ix_stock_price_histories_stock_id1");
+
+                    b.HasIndex("StockId", "Timestamp")
+                        .HasDatabaseName("ix_stock_price_histories_stock_id_timestamp");
+
+                    b.ToTable("stock_price_histories", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.Stock.UserWatchlist", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text")
+                        .HasColumnName("id");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_date");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
+
+                    b.Property<string>("StockId")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("stock_id");
+
+                    b.Property<string>("StockId1")
+                        .HasColumnType("text")
+                        .HasColumnName("stock_id1");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text")
+                        .HasColumnName("updated_by");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_date");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_user_watchlists");
+
+                    b.HasIndex("StockId")
+                        .HasDatabaseName("ix_user_watchlists_stock_id");
+
+                    b.HasIndex("StockId1")
+                        .HasDatabaseName("ix_user_watchlists_stock_id1");
+
+                    b.HasIndex("UserId", "StockId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_user_watchlists_user_id_stock_id");
+
+                    b.ToTable("user_watchlists", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -338,9 +601,73 @@ namespace Persistence.Migrations
                     b.ToTable("user_tokens", "Identity");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Stock.StockAlert", b =>
+                {
+                    b.HasOne("Domain.Entities.Stock.Stock", "Stock")
+                        .WithMany("Alerts")
+                        .HasForeignKey("StockId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_stock_alert_stocks_stock_id");
+
+                    b.HasOne("Domain.Entities.Identity.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_stock_alert_users_user_id");
+
+                    b.Navigation("Stock");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Stock.StockPriceHistory", b =>
+                {
+                    b.HasOne("Domain.Entities.Stock.Stock", "Stock")
+                        .WithMany()
+                        .HasForeignKey("StockId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_stock_price_histories_stocks_stock_id");
+
+                    b.HasOne("Domain.Entities.Stock.Stock", null)
+                        .WithMany("PriceHistory")
+                        .HasForeignKey("StockId1")
+                        .HasConstraintName("fk_stock_price_histories_stocks_stock_id1");
+
+                    b.Navigation("Stock");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Stock.UserWatchlist", b =>
+                {
+                    b.HasOne("Domain.Entities.Stock.Stock", "Stock")
+                        .WithMany()
+                        .HasForeignKey("StockId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_user_watchlists_stocks_stock_id");
+
+                    b.HasOne("Domain.Entities.Stock.Stock", null)
+                        .WithMany("UserWatchlists")
+                        .HasForeignKey("StockId1")
+                        .HasConstraintName("fk_user_watchlists_stocks_stock_id1");
+
+                    b.HasOne("Domain.Entities.Identity.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_user_watchlists_users_user_id");
+
+                    b.Navigation("Stock");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
-                    b.HasOne("Domain.Entities.UserRole", null)
+                    b.HasOne("Domain.Entities.Identity.UserRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -350,7 +677,7 @@ namespace Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Domain.Entities.User", null)
+                    b.HasOne("Domain.Entities.Identity.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -360,7 +687,7 @@ namespace Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Domain.Entities.User", null)
+                    b.HasOne("Domain.Entities.Identity.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -370,14 +697,14 @@ namespace Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
-                    b.HasOne("Domain.Entities.UserRole", null)
+                    b.HasOne("Domain.Entities.Identity.UserRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("fk_user_roles_roles_role_id");
 
-                    b.HasOne("Domain.Entities.User", null)
+                    b.HasOne("Domain.Entities.Identity.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -387,12 +714,21 @@ namespace Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Domain.Entities.User", null)
+                    b.HasOne("Domain.Entities.Identity.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("fk_user_tokens_users_user_id");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Stock.Stock", b =>
+                {
+                    b.Navigation("Alerts");
+
+                    b.Navigation("PriceHistory");
+
+                    b.Navigation("UserWatchlists");
                 });
 #pragma warning restore 612, 618
         }

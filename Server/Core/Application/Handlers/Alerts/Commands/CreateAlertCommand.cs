@@ -6,9 +6,9 @@
 
     using Shared;
 
-    using Models.Alerts;
-
     using Application.Interfaces.Alerts;
+
+    using Models.Stock;
 
     public record CreateAlertCommand(string UserId, CreateStockAlertRequest Request) : IRequest<Result<StockAlertDto>>;
 

@@ -16,8 +16,6 @@
 
     using Persistence.Context;
 
-    using Domain.Entities;
-
     using Models;
 
     using Infrastructure.Services.Token;
@@ -25,6 +23,7 @@
     using Infrastructure.Services.Identity;
     using Application.Interfaces.Cache;
     using Application.Interfaces.Identity;
+    using Domain.Entities.Identity;
 
     public static class Startup
     {

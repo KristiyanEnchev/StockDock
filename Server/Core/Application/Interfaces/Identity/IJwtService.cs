@@ -1,6 +1,6 @@
 ﻿namespace Application.Interfaces.Identity
 {
-    using Domain.Entities;
+    using Domain.Entities.Identity;
 
     public interface IJwtService
     {

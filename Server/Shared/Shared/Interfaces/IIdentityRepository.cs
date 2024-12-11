@@ -1,6 +1,6 @@
 ﻿namespace Shared.Interfaces
 {
-    using Domain.Entities;
+    using Domain.Entities.Base;
 
     public interface IIdentityRepository<TEntity> where TEntity : BaseIdentityAuditableEntity
     {
