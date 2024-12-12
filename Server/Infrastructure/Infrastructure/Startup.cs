@@ -23,6 +23,7 @@
     using Infrastructure.Services.Identity;
     using Application.Interfaces.Cache;
     using Application.Interfaces.Identity;
+
     using Domain.Entities.Identity;
 
     public static class Startup
@@ -130,11 +131,6 @@
                 ConnectionMultiplexer.Connect(redisSettings!.ConnectionString));
 
             services.AddSingleton<ICacheService, RedisCacheService>();
-
-            services.AddSignalR().AddStackExchangeRedis(redisSettings!.ConnectionString, options =>
-            {
-                options.Configuration.ChannelPrefix = "StockHub";
-            });
 
             return services;
         }

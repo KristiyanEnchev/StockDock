@@ -39,8 +39,11 @@
         public override async Task OnConnectedAsync()
         {
             var userId = _currentUser.Id!;
+            _logger.LogInformation("User {UserId} connected with connection ID {ConnectionId}",
+                userId, Context.ConnectionId);
 
             await Groups.AddToGroupAsync(Context.ConnectionId, "popular_stocks");
+            _logger.LogDebug("Added {ConnectionId} to popular_stocks group", Context.ConnectionId);
 
             var watchlistResult = await _watchlistService.GetUserWatchlistAsync(userId);
 

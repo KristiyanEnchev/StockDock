@@ -1,4 +1,4 @@
-﻿namespace Infrastructure.Services.Stock
+﻿namespace Infrastructure.Services.BackgroundServices
 {
     using System;
     using System.Linq;
@@ -22,6 +22,8 @@
 
     using Application.Interfaces.Stock;
     using Application.Interfaces.Alerts;
+
+    using Infrastructure.Services.Stock;
 
     public class StockUpdateService : BackgroundService
     {

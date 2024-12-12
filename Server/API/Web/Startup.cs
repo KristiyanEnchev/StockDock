@@ -13,7 +13,6 @@
     using StackExchange.Redis;
 
     using Application;
-    using Application.Interfaces.Cache;
     using Application.Interfaces.Stock;
     using Application.Interfaces.Identity;
     using Application.Interfaces.Alerts;
@@ -25,9 +24,10 @@
     using Web.Extensions.Healtchecks;
 
     using Infrastructure;
-    using Infrastructure.Services.Cache;
     using Infrastructure.Services.Stock;
     using Infrastructure.Services.Alerts;
+    using Infrastructure.Services.Demo;
+    using Infrastructure.Services.BackgroundServices;
 
     using Persistence;
     using Persistence.Context;
@@ -57,18 +57,37 @@
             services.AddHealth(config);
             services.AddScoped<IUser, CurrentUser>();
 
-            services.AddHttpClient<IExternalStockApi, AlphaVantageClient>(client =>
-            {
-                client.BaseAddress = new Uri("https://www.alphavantage.co/");
-                client.DefaultRequestHeaders.Add("Accept", "application/json");
-                client.DefaultRequestHeaders.Add("User-Agent", "StockDock");
-            });
+            services.AddStockServices(config);
 
-            services.AddSingleton<ICacheService, RedisCacheService>();
+            return services;
+        }
+
+        private static IServiceCollection AddStockServices(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.Configure<StockApiSettings>(configuration.GetSection("StockApi"));
+            var stockApiSettings = configuration.GetSection("StockApi").Get<StockApiSettings>();
+
+            if (stockApiSettings?.UseDemo == true)
+            {
+                services.AddSingleton<DemoStockDataProvider>();
+                services.AddScoped<IExternalStockApi>(sp => sp.GetRequiredService<DemoStockDataProvider>());
+                services.AddHostedService<DemoStockUpdateService>();
+            }
+            else
+            {
+                services.AddHttpClient<IExternalStockApi, AlphaVantageClient>(client =>
+                {
+                    client.BaseAddress = new Uri("https://www.alphavantage.co/");
+                    client.DefaultRequestHeaders.Add("Accept", "application/json");
+                    client.DefaultRequestHeaders.Add("User-Agent", "StockDock");
+                });
+
+                services.AddHostedService<StockUpdateService>();
+            }
+
             services.AddScoped<IStockService, StockService>();
             services.AddScoped<IWatchlistService, WatchlistService>();
             services.AddScoped<IStockAlertService, StockAlertService>();
-            services.AddHostedService<StockUpdateService>();
 
             return services;
         }

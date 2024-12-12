@@ -1,5 +1,4 @@
-﻿// Infrastructure/Services/Stock/StockService.cs
-namespace Infrastructure.Services.Stock
+﻿namespace Infrastructure.Services.Stock
 {
     using System;
     using System.Collections.Generic;
@@ -12,12 +11,14 @@ namespace Infrastructure.Services.Stock
     using Mapster;
 
     using Models.Stock;
+
     using Shared;
+    using Shared.Interfaces;
+
     using Application.Interfaces.Stock;
     using Application.Interfaces.Cache;
+
     using Domain.Entities.Stock;
-    using Domain.Interfaces;
-    using Shared.Interfaces;
 
     public class StockService : IStockService
     {
@@ -45,7 +46,6 @@ namespace Infrastructure.Services.Stock
         {
             try
             {
-                // Try to get from cache first
                 var cacheKey = $"stock_{symbol}";
                 var cachedStock = await _cacheService.GetAsync<StockDto>(cacheKey);
 
@@ -54,13 +54,11 @@ namespace Infrastructure.Services.Stock
                     return Result<StockDto>.SuccessResult(cachedStock);
                 }
 
-                // Try to get from database
                 var stockEntity = await _stockRepository.AsNoTracking()
                     .FirstOrDefaultAsync(s => s.Symbol == symbol);
 
                 if (stockEntity != null)
                 {
-                    // Check if data is fresh (less than 5 minutes old)
                     if ((DateTime.UtcNow - stockEntity.LastUpdated).TotalMinutes < 5)
                     {
                         var stockDto = stockEntity.Adapt<StockDto>();
@@ -69,7 +67,6 @@ namespace Infrastructure.Services.Stock
                     }
                 }
 
-                // If not found or stale, fetch from external API
                 var apiResult = await _externalApi.GetStockQuoteAsync(symbol);
 
                 if (!apiResult.Success)
@@ -79,7 +76,6 @@ namespace Infrastructure.Services.Stock
 
                 var stockData = apiResult.Data;
 
-                // Update or create stock in database
                 if (stockEntity == null)
                 {
                     stockEntity = new Stock
@@ -151,7 +147,6 @@ namespace Infrastructure.Services.Stock
         {
             try
             {
-                // Try to get from cache first
                 var cachedStocks = await _cacheService.GetAsync<List<StockDto>>(PopularStocksCacheKey);
 
                 if (cachedStocks != null)
@@ -159,20 +154,17 @@ namespace Infrastructure.Services.Stock
                     return Result<List<StockDto>>.SuccessResult(cachedStocks);
                 }
 
-                // Try to get from database first
                 var stocks = await _stockRepository.AsNoTracking()
                     .OrderByDescending(s => s.PopularityScore)
                     .Take(limit)
                     .ToListAsync();
 
-                // If we don't have enough, fetch from API
                 if (stocks.Count < limit)
                 {
                     var apiResult = await _externalApi.GetTopStocksAsync("most_active");
 
                     if (apiResult.Success)
                     {
-                        // Store in database for future use
                         foreach (var stockDto in apiResult.Data)
                         {
                             var existingStock = stocks.FirstOrDefault(s => s.Symbol == stockDto.Symbol);
@@ -189,7 +181,7 @@ namespace Infrastructure.Services.Stock
                                     OpenPrice = stockDto.OpenPrice,
                                     PreviousClose = stockDto.PreviousClose,
                                     Volume = stockDto.Volume,
-                                    PopularityScore = 50, // Default popularity
+                                    PopularityScore = 50,
                                     LastUpdated = DateTime.UtcNow
                                 };
 
@@ -204,7 +196,6 @@ namespace Infrastructure.Services.Stock
 
                 var result = stocks.Adapt<List<StockDto>>();
 
-                // Cache the result
                 await _cacheService.SetAsync(PopularStocksCacheKey, result, TimeSpan.FromMinutes(CacheExpiryMinutes));
 
                 return Result<List<StockDto>>.SuccessResult(result);
@@ -220,14 +211,12 @@ namespace Infrastructure.Services.Stock
         {
             try
             {
-                // Try to get stock from database
                 var stock = await _stockRepository.AsNoTracking()
                     .Include(s => s.PriceHistory.Where(p => p.Timestamp >= from && p.Timestamp <= to))
                     .FirstOrDefaultAsync(s => s.Symbol == symbol);
 
                 if (stock == null)
                 {
-                    // Try to get stock details first
                     var stockResult = await GetStockBySymbolAsync(symbol);
                     if (!stockResult.Success)
                     {
@@ -239,7 +228,6 @@ namespace Infrastructure.Services.Stock
                         .FirstOrDefaultAsync(s => s.Symbol == symbol);
                 }
 
-                // If we don't have history data or it's incomplete, get from API
                 if (stock!.PriceHistory.Count == 0 ||
                     stock.PriceHistory.Min(p => p.Timestamp) > from ||
                     stock.PriceHistory.Max(p => p.Timestamp) < to)
@@ -248,7 +236,6 @@ namespace Infrastructure.Services.Stock
 
                     if (apiResult.Success)
                     {
-                        // Store history in database for future use
                         foreach (var historyDto in apiResult.Data)
                         {
                             if (!stock.PriceHistory.Any(p => p.Timestamp == historyDto.Timestamp))
@@ -279,7 +266,6 @@ namespace Infrastructure.Services.Stock
                     }
                 }
 
-                // Map the result from database
                 var result = stock.PriceHistory
                     .Where(p => p.Timestamp >= from && p.Timestamp <= to)
                     .OrderBy(p => p.Timestamp)
@@ -298,12 +284,10 @@ namespace Infrastructure.Services.Stock
         {
             try
             {
-                // First search in database
                 var dbStocks = await _stockRepository.AsNoTracking()
                     .Where(s => s.Symbol.Contains(query) || s.CompanyName.Contains(query))
                     .ToListAsync();
 
-                // If we don't have enough results, search via API
                 if (dbStocks.Count < 10)
                 {
                     var apiResult = await _externalApi.SearchStocksAsync(query);
@@ -312,10 +296,8 @@ namespace Infrastructure.Services.Stock
                     {
                         foreach (var searchResult in apiResult.Data)
                         {
-                            // Check if stock already exists in our database
                             if (!dbStocks.Any(s => s.Symbol == searchResult.Symbol))
                             {
-                                // Get full stock data
                                 var stockResult = await _externalApi.GetStockQuoteAsync(searchResult.Symbol);
 
                                 if (stockResult.Success)
@@ -343,7 +325,6 @@ namespace Infrastructure.Services.Stock
                     }
                 }
 
-                // Apply sorting
                 var stocks = dbStocks.Adapt<List<StockDto>>();
 
                 if (!string.IsNullOrEmpty(sortBy))
