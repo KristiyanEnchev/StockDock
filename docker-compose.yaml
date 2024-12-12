@@ -83,6 +83,26 @@ services:
     networks:
       - app-network
 
+  # API (Dotnet)
+  api:
+    build:
+      context: ./Server
+      dockerfile: ./API/Host/Dockerfile
+    container_name: dotnet-api
+    ports:
+      - '8080:8080'
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - DOTNET_ENVIRONMENT=PROD
+      - ConnectionStrings__DefaultConnection=${DB_CONNECTION_STRING}
+      - RedisSettings__ConnectionString=${REDIS_CONNECTION}
+      - StockApi__UseDemo=${USE_DEMO}
+      - StockApi__AlphaVantageApiKey=${API_KEY}
+    networks:
+      - app-network
+
 volumes:
   postgres_data:
   pgadmin_data:

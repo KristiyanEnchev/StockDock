@@ -21,6 +21,7 @@
     using Infrastructure.Services.Token;
     using Infrastructure.Services.Cache;
     using Infrastructure.Services.Identity;
+
     using Application.Interfaces.Cache;
     using Application.Interfaces.Identity;
 
@@ -121,16 +122,58 @@
             var redisSettings = configuration.GetSection(nameof(RedisSettings)).Get<RedisSettings>();
             services.Configure<RedisSettings>(configuration.GetSection(nameof(RedisSettings)));
 
+            if (string.IsNullOrEmpty(redisSettings.ConnectionString))
+            {
+                throw new InvalidOperationException("Redis connection string is missing in configuration.");
+            }
+
+            if (redisSettings.ConnectionString.StartsWith("default:"))
+            {
+                var parts = redisSettings.ConnectionString.Replace("default:", "").Split('@');
+                if (parts.Length != 2) throw new InvalidOperationException("Invalid Upstash Redis connection string format.");
+
+                redisSettings.ConnectionString = $"{parts[1]},password={parts[0]},ssl=True,abortConnect=False";
+            }
+
+            if (!Uri.TryCreate($"rediss://{redisSettings.ConnectionString.Split(',')[0]}", UriKind.Absolute, out var redisUri))
+            {
+                throw new InvalidOperationException("Invalid Redis connection string format.");
+            }
+
+            var redisOptions = ConfigurationOptions.Parse(redisSettings.ConnectionString, true);
+
+            var host = redisUri.Host;
+            var port = redisUri.Port > 0 ? redisUri.Port : 6379;
+            var password = redisOptions.Password ?? redisUri.UserInfo;
+            var sslEnabled = redisOptions.Ssl;
+
+            var redisConfigString = $"{host}:{port},ssl={sslEnabled.ToString().ToLower()},abortConnect=False,password={password}";
+
+            var options = new ConfigurationOptions
+            {
+                EndPoints = { $"{host}:{port}" },
+                Ssl = sslEnabled,
+                AbortOnConnectFail = false,
+                ReconnectRetryPolicy = new ExponentialRetry(5000),
+                ConnectTimeout = 5000,
+                SyncTimeout = 5000,
+                DefaultDatabase = 0,
+                ResolveDns = true,
+                KeepAlive = 60,
+                Password = password
+            };
+
+            var multiplexer = ConnectionMultiplexer.Connect(options);
+            services.AddSingleton<IConnectionMultiplexer>(multiplexer);
+
             services.AddStackExchangeRedisCache(options =>
             {
-                options.Configuration = redisSettings!.ConnectionString;
+                options.Configuration = redisConfigString;
                 options.InstanceName = redisSettings.InstanceName;
             });
 
-            services.AddSingleton<IConnectionMultiplexer>(sp =>
-                ConnectionMultiplexer.Connect(redisSettings!.ConnectionString));
-
-            services.AddSingleton<ICacheService, RedisCacheService>();
+            services
+                .AddTransient<ICacheService, RedisCacheService>();
 
             return services;
         }

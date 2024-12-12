@@ -52,7 +52,7 @@
             services.AddSwaggerDocumentation();
             services.AddRouting(options => options.LowercaseUrls = true);
 
-            services.AddCors();
+            services.AddCorsPolicy(config);
 
             services.AddHealth(config);
             services.AddScoped<IUser, CurrentUser>();
@@ -173,54 +173,23 @@
             return builder;
         }
 
-        public static IServiceCollection AddCors(this IServiceCollection services)
+        public static IServiceCollection AddCorsPolicy(this IServiceCollection services, IConfiguration config)
         {
-            services.AddCors(options =>
+            var originsString = config.GetValue<string>("Cors:Origins");
+
+            if (string.IsNullOrWhiteSpace(originsString))
             {
-                options.AddPolicy("CleanArchitecture",
-                    builder => builder
-                       .AllowAnyHeader()
-                       .AllowAnyMethod()
-                       .AllowCredentials()
-                       .WithOrigins("http://localhost:3000"));
-            });
-
-            return services;
-        }
-
-        private static IServiceCollection AddRedis(this IServiceCollection services, IConfiguration configuration)
-        {
-            var redisSettings = configuration.GetSection(nameof(RedisSettings)).Get<RedisSettings>();
-
-            if (redisSettings == null)
-            {
-                throw new InvalidOperationException("Redis settings are not configured properly in appsettings.json");
+                return services;
             }
 
-            services.Configure<RedisSettings>(configuration.GetSection(nameof(RedisSettings)));
+            var origins = originsString.Split(';', StringSplitOptions.RemoveEmptyEntries);
 
-            var multiplexer = ConnectionMultiplexer.Connect(new ConfigurationOptions
-            {
-                EndPoints = { redisSettings.ConnectionString },
-                AbortOnConnectFail = false,
-                ReconnectRetryPolicy = new ExponentialRetry(5000),
-                ConnectTimeout = 5000,
-                SyncTimeout = 5000,
-                DefaultDatabase = 0,
-                ResolveDns = true,
-                KeepAlive = 60,
-            });
-
-            services.AddSingleton<IConnectionMultiplexer>(multiplexer);
-
-            services.AddStackExchangeRedisCache(options =>
-            {
-                options.Configuration = redisSettings.ConnectionString;
-                options.InstanceName = redisSettings.InstanceName;
-            });
-
-            services.AddSingleton<IConnectionMultiplexer>(sp =>
-                ConnectionMultiplexer.Connect(redisSettings.ConnectionString));
+            services.AddCors(opt =>
+                opt.AddPolicy("CleanArchitecture", policy =>
+                    policy.AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials()
+                        .WithOrigins(origins)));
 
             return services;
         }
