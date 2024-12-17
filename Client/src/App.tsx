@@ -1,30 +1,32 @@
 import { BrowserRouter } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import AppRoutes from './routes';
-import { useAppDispatch } from './store/hooks';
 import { useEffect } from 'react';
-import { setTheme } from './features/theme/themeSlice';
 import { initializeTheme } from './lib/theme';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+import { store, persistor } from './store';
 
 function App() {
-  const dispatch = useAppDispatch();
-
   useEffect(() => {
-    const isDark = initializeTheme();
-    dispatch(setTheme(isDark));
-  }, [dispatch]);
+    initializeTheme();
+  }, []);
 
   return (
-    <BrowserRouter>
-      <AppRoutes />
-      <Toaster
-        position="bottom-right"
-        toastOptions={{
-          className: 'dark:bg-library-dark-paper dark:text-library-dark-text-primary',
-          duration: 3000,
-        }}
-      />
-    </BrowserRouter>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <BrowserRouter>
+          <AppRoutes />
+          <Toaster
+            position="bottom-right"
+            toastOptions={{
+              className: 'dark:bg-library-dark-paper dark:text-library-dark-text-primary',
+              duration: 3000,
+            }}
+          />
+        </BrowserRouter>
+      </PersistGate>
+    </Provider>
   );
 }
 
