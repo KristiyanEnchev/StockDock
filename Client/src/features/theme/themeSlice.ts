@@ -22,11 +22,7 @@ const themeSlice = createSlice({
             }
         },
         toggleTheme: (state) => {
-            state.isDark = !state.isDark;
-            if (typeof window !== "undefined") {
-                localStorage.setItem("theme", state.isDark ? "dark" : "light");
-                document.documentElement.classList.toggle("dark", state.isDark);
-            }
+            themeSlice.caseReducers.setTheme(state, { payload: !state.isDark } as PayloadAction<boolean>);
         },
     },
 });

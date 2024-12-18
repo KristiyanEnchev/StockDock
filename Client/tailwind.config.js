@@ -1,3 +1,5 @@
+import colors from "tailwindcss/colors";
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
@@ -10,12 +12,12 @@ export default {
   theme: {
     extend: {
       colors: {
-        "dark-bg": "#0f172a",
-        "dark-card": "#1e293b",
-        "dark-text": "#f8fafc",
-        "light-bg": "#f8fafc",
-        "light-card": "#e2e8f0",
-        "light-text": "#1e293b",
+        "dark-bg": colors.slate[900],
+        "dark-card": colors.gray[800],
+        "dark-text": colors.gray[100],
+        "light-bg": colors.gray[100],
+        "light-card": colors.gray[300],
+        "light-text": colors.gray[900],
       },
     },
   },
