@@ -1,3 +1,4 @@
+import { MainLayout } from "@/components/layout/MainLayout";
 import { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
 
@@ -13,14 +14,16 @@ const Loader = () => (
 export default function AppRoutes() {
     return (
         <Routes>
-            <Route
-                path="/"
-                element={
-                    <Suspense fallback={<Loader />}>
-                        <Home />
-                    </Suspense>
-                }
-            />
+            <Route path="/" element={<MainLayout />}>
+                <Route
+                    path="/"
+                    element={
+                        <Suspense fallback={<Loader />}>
+                            <Home />
+                        </Suspense>
+                    }
+                />
+            </Route>
             <Route
                 path="*"
                 element={
