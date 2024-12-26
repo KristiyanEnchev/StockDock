@@ -3,6 +3,7 @@ import type { RootState } from '../../store';
 import { AuthState, AuthResponse } from '../../types/authTypes';
 import { parseUserFromToken, verifyToken } from '../../lib/authUtils';
 import { AUTH_STORAGE_KEY } from './../../lib/authUtils';
+import { authApi } from './authApi';
 
 const getInitialState = (): AuthState => ({
     user: null,
@@ -28,6 +29,23 @@ const loadState = (): AuthState => {
     }
     return getInitialState();
 };
+
+export const logoutUser = createAsyncThunk(
+    'auth/logoutUser',
+    async (_, { getState, dispatch }) => {
+        const state = getState() as RootState;
+        const userEmail = state.auth.user?.email;
+
+        if (userEmail) {
+            try {
+                await dispatch(authApi.endpoints.logout.initiate(userEmail)).unwrap();
+            } catch (error) {
+                console.error('Server logout failed:', error);
+            }
+        }
+        dispatch(authSlice.actions.clearAuth());
+    }
+);
 
 export const authSlice = createSlice({
     name: 'auth',
