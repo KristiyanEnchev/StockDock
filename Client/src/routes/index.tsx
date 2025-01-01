@@ -1,15 +1,20 @@
-import { MainLayout } from "@/components/layout/MainLayout";
 import { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
+import { MainLayout } from "@/components/layout/MainLayout";
+import LoadingSpinner from '@/components/common/LoadingSpinner';
 
-const Home = lazy(() => import('@/pages/Home'));
+/// TODO : remove before finishing the project
+const delayImport = <T extends { default: React.ComponentType<any> }>(
+    importFunction: () => Promise<T>,
+    delay: number = 5000
+): Promise<T> => {
+    return new Promise(resolve => {
+        setTimeout(() => resolve(importFunction()), delay);
+    });
+};
+
+const Home = lazy(() => delayImport(() => import('@/pages/Home')));
 const NotFound = lazy(() => import("@/pages/NotFound"));
-
-const Loader = () => (
-    <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white">
-        <span className="animate-pulse">Loading...</span>
-    </div>
-);
 
 export default function AppRoutes() {
     return (
@@ -18,7 +23,7 @@ export default function AppRoutes() {
                 <Route
                     path="/"
                     element={
-                        <Suspense fallback={<Loader />}>
+                        <Suspense fallback={<LoadingSpinner size="large" fullScreen={true} variant="alternative" />}>
                             <Home />
                         </Suspense>
                     }
@@ -27,7 +32,7 @@ export default function AppRoutes() {
             <Route
                 path="*"
                 element={
-                    <Suspense fallback={<Loader />}>
+                    <Suspense fallback={<LoadingSpinner size="large" fullScreen={true} variant="alternative" />}>
                         <NotFound />
                     </Suspense>
                 }
