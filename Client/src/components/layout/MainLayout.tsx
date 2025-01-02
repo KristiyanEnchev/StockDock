@@ -5,7 +5,7 @@ export function MainLayout() {
     return (
         <div className="min-h-screen flex flex-col bg-library-background dark:bg-library-dark-background">
             <Navigation />
-            <main className="flex-grow pt-20">
+            <main className="flex-grow pt-0">
                 <Outlet />
             </main>
         </div>
