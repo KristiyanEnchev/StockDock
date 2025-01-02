@@ -31,6 +31,19 @@ export default function Login() {
         resolver: zodResolver(loginSchema),
     });
 
+    const onSubmit = async (data: LoginFormData) => {
+        try {
+            setIsLoading(true);
+            const result = await login(data).unwrap();
+            dispatch(setCredentials(result));
+            navigate(location.state?.from?.pathname || "/", { replace: true });
+            toast.success("Successfully logged in!");
+        } catch {
+            toast.error("Failed to login. Please check your credentials.");
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     return (
         <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 bg-light-bg dark:bg-dark-bg">
@@ -42,7 +55,7 @@ export default function Login() {
                 <p className="text-center text-sm text-light-text dark:text-dark-text opacity-80 mt-1">
                     Use <span className="font-medium">admin@admin.com / 123456</span> to sign in
                 </p>
-                <form className="mt-5 space-y-4" >
+                <form className="mt-5 space-y-4" onSubmit={handleSubmit(onSubmit)}>
                     <div>
                         <input
                             type="email"
