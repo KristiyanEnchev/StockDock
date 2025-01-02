@@ -15,6 +15,7 @@ const delayImport = <T extends { default: React.ComponentType<any> }>(
 
 const Home = lazy(() => delayImport(() => import('@/pages/Home')));
 const NotFound = lazy(() => import("@/pages/NotFound"));
+const Login = lazy(() => import("@/pages/Login"));
 
 export default function AppRoutes() {
     return (
@@ -25,6 +26,14 @@ export default function AppRoutes() {
                     element={
                         <Suspense fallback={<LoadingSpinner size="large" fullScreen={true} variant="alternative" />}>
                             <Home />
+                        </Suspense>
+                    }
+                />
+                <Route
+                    path="login"
+                    element={
+                        <Suspense fallback={<LoadingSpinner size="large" fullScreen={true} variant="alternative" />}>
+                            <Login />
                         </Suspense>
                     }
                 />
