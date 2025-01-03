@@ -150,12 +150,18 @@
             }
         }
 
-        public async Task ProcessStockPriceChange(string stockId, decimal oldPrice, decimal newPrice)
+        public async Task ProcessStockPriceChange(string symbol, decimal oldPrice, decimal newPrice)
         {
             try
             {
+                var stock = await _stockRepository.AsNoTracking()
+                    .FirstOrDefaultAsync(s => s.Symbol == symbol);
+
+                if (stock == null)
+                    return;
+
                 var alerts = await _alertRepository.AsNoTracking()
-                    .Where(a => a.StockId == stockId && !a.IsTriggered)
+                    .Where(a => a.StockId == stock.Id && !a.IsTriggered)
                     .Include(a => a.Stock)
                     .ToListAsync();
 
@@ -199,7 +205,7 @@
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error processing price change for stock {StockId}", stockId);
+                _logger.LogError(ex, "Error processing price change for stock {Symbol}", symbol);
             }
         }
     }

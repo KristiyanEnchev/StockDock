@@ -13,27 +13,29 @@
     using Application.Interfaces.Watchlist;
 
     using Models.Stock;
+    using Application.Interfaces.Alerts;
+    using Domain.Entities.Stock;
 
     [Authorize]
     public class StockHub : Hub<IStockHub>
     {
         private readonly IWatchlistService _watchlistService;
-        private readonly IStockService _stockService;
         private readonly ILogger<StockHub> _logger;
         private readonly IUser _currentUser;
+        private readonly IStockAlertService _alertService;
 
         private static readonly Dictionary<string, HashSet<string>> _userSubscriptions = new();
 
         public StockHub(
             IWatchlistService watchlistService,
-            IStockService stockService,
             ILogger<StockHub> logger,
-            IUser currentUser)
+            IUser currentUser,
+            IStockAlertService alertService)
         {
             _watchlistService = watchlistService;
-            _stockService = stockService;
             _logger = logger;
             _currentUser = currentUser;
+            _alertService = alertService;
         }
 
         public override async Task OnConnectedAsync()
@@ -171,6 +173,86 @@
             {
                 _logger.LogError(ex, "Error removing {Symbol} from watchlist", symbol);
                 throw;
+            }
+        }
+
+        public async Task CreateAlert(string symbol, AlertType type, decimal threshold)
+        {
+            try
+            {
+                var userId = _currentUser.Id!;
+                var request = new CreateStockAlertRequest
+                {
+                    Symbol = symbol,
+                    Type = type,
+                    Threshold = threshold
+                };
+
+                var result = await _alertService.CreateAlertAsync(userId, request);
+
+                if (result.Success)
+                {
+                    await Clients.Caller.ReceiveAlertCreated(result.Data);
+                    _logger.LogInformation("User {UserId} created alert for {Symbol}", userId, symbol);
+                }
+                else
+                {
+                    await Clients.Caller.ReceiveError($"Failed to create alert: {result.Errors}");
+                    _logger.LogWarning("Failed to create alert for {Symbol}: {Message}", symbol, result.Errors);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating alert for {Symbol}", symbol);
+                await Clients.Caller.ReceiveError("An error occurred creating the alert.");
+            }
+        }
+
+        public async Task DeleteAlert(string alertId)
+        {
+            try
+            {
+                var userId = _currentUser.Id!;
+                var result = await _alertService.DeleteAlertAsync(userId, alertId);
+
+                if (result.Success)
+                {
+                    await Clients.Caller.ReceiveAlertDeleted(alertId);
+                    _logger.LogInformation("User {UserId} deleted alert {AlertId}", userId, alertId);
+                }
+                else
+                {
+                    await Clients.Caller.ReceiveError($"Failed to delete alert: {result.Errors}");
+                    _logger.LogWarning("Failed to delete alert {AlertId}: {Message}", alertId, result.Errors);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting alert {AlertId}", alertId);
+                await Clients.Caller.ReceiveError("An error occurred deleting the alert.");
+            }
+        }
+
+        public async Task GetUserAlerts()
+        {
+            try
+            {
+                var userId = _currentUser.Id!;
+                var result = await _alertService.GetUserAlertsAsync(userId);
+
+                if (result.Success)
+                {
+                    await Clients.Caller.ReceiveUserAlerts(result.Data);
+                }
+                else
+                {
+                    await Clients.Caller.ReceiveError($"Failed to get alerts: {result.Errors}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting alerts for user {UserId}", _currentUser.Id);
+                await Clients.Caller.ReceiveError("An error occurred retrieving alerts.");
             }
         }
     }

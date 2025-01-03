@@ -10,6 +10,7 @@
     using Infrastructure.Services.Stock;
 
     using Models;
+    using Application.Interfaces.Alerts;
 
     public class DemoStockUpdateService : BackgroundService
     {
@@ -17,17 +18,20 @@
         private readonly IHubContext<StockHub, IStockHub> _hubContext;
         private readonly ILogger<DemoStockUpdateService> _logger;
         private readonly StockApiSettings _settings;
+        private readonly IStockAlertService _alertService;
 
         public DemoStockUpdateService(
             DemoStockDataProvider demoProvider,
             IHubContext<StockHub, IStockHub> hubContext,
             IOptions<StockApiSettings> settings,
-            ILogger<DemoStockUpdateService> logger)
+            ILogger<DemoStockUpdateService> logger,
+            IStockAlertService alertService)
         {
             _demoProvider = demoProvider;
             _hubContext = hubContext;
             _logger = logger;
             _settings = settings.Value;
+            _alertService = alertService;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -55,6 +59,9 @@
 
                     foreach (var symbol in symbols)
                     {
+                        var currentStockResult = await _demoProvider.GetStockQuoteAsync(symbol);
+                        decimal oldPrice = currentStockResult.Success ? currentStockResult.Data.CurrentPrice : 0;
+
                         _demoProvider.SimulatePriceUpdate(symbol);
 
                         var stockResult = await _demoProvider.GetStockQuoteAsync(symbol);
@@ -62,6 +69,15 @@
                         {
                             await _hubContext.Clients.Group(symbol)
                                 .ReceiveStockPriceUpdate(stockResult.Data);
+
+                            if (oldPrice > 0)
+                            {
+                                await _alertService.ProcessStockPriceChange(
+                                    stockResult.Data.Symbol,
+                                    oldPrice,
+                                    stockResult.Data.CurrentPrice);
+                            }
+
                             updatedCount++;
 
                             _logger.LogDebug("Updated {Symbol} price to {Price} ({Change:+0.00;-0.00}%)",

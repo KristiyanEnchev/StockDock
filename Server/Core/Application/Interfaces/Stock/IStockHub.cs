@@ -5,7 +5,12 @@
     public interface IStockHub
     {
         Task ReceiveStockPriceUpdate(StockDto update);
-        Task ReceiveAlertTriggered(StockAlertDto alert);
         Task ReceivePopularStocksUpdate(List<StockDto> stocks);
+        Task ReceiveAlertTriggered(StockAlertDto alert);
+
+        Task ReceiveAlertCreated(StockAlertDto alert);
+        Task ReceiveAlertDeleted(string alertId);
+        Task ReceiveUserAlerts(List<StockAlertDto> alerts);
+        Task ReceiveError(string message);
     }
 }
