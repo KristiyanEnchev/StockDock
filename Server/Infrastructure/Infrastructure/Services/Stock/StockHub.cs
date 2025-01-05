@@ -5,18 +5,18 @@
     using System.Collections.Generic;
 
     using Microsoft.AspNetCore.SignalR;
-    using Microsoft.AspNetCore.Authorization;
     using Microsoft.Extensions.Logging;
 
     using Application.Interfaces.Stock;
+    using Application.Interfaces.Alerts;
     using Application.Interfaces.Identity;
     using Application.Interfaces.Watchlist;
 
     using Models.Stock;
-    using Application.Interfaces.Alerts;
-    using Domain.Entities.Stock;
 
-    [Authorize]
+    using Domain.Entities.Stock;
+    using Microsoft.AspNetCore.Authorization;
+
     public class StockHub : Hub<IStockHub>
     {
         private readonly IWatchlistService _watchlistService;
@@ -79,6 +79,7 @@
             await base.OnDisconnectedAsync(exception);
         }
 
+        [Authorize]
         public async Task SubscribeToStock(string symbol)
         {
             try
@@ -104,6 +105,7 @@
             }
         }
 
+        [Authorize]
         public async Task UnsubscribeFromStock(string symbol)
         {
             try
@@ -126,6 +128,7 @@
             }
         }
 
+        [Authorize]
         public async Task AddToWatchlist(string symbol)
         {
             try
@@ -156,6 +159,7 @@
             }
         }
 
+        [Authorize]
         public async Task RemoveFromWatchlist(string symbol)
         {
             try
@@ -176,6 +180,7 @@
             }
         }
 
+        [Authorize]
         public async Task CreateAlert(string symbol, AlertType type, decimal threshold)
         {
             try
@@ -208,6 +213,7 @@
             }
         }
 
+        [Authorize]
         public async Task DeleteAlert(string alertId)
         {
             try
@@ -233,6 +239,7 @@
             }
         }
 
+        [Authorize]
         public async Task GetUserAlerts()
         {
             try

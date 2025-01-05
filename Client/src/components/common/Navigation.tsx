@@ -69,12 +69,18 @@ export function Navigation() {
                                 <LogoutButton />
                             </div>
                         ) : (
-                            <Link
-                                to="/login"
-                                className="px-4 py-2 rounded-lg bg-green-600 dark:bg-green-500 text-white hover:bg-green-700 dark:hover:bg-green-400 transition"
-                            >
-                                Sign In
-                            </Link>
+                            <>
+                                <Link
+                                    to="/login"
+                                    className="px-4 py-2 rounded-lg bg-green-600 dark:bg-green-500 text-white hover:bg-green-700 dark:hover:bg-green-400 transition"
+                                >
+                                    Sign In
+                                </Link>
+
+                                {/* <Link to="/register" className="px-3 py-2 text-white rounded-md hover:bg-teal-500">
+                                    Register
+                                </Link> */}
+                            </>
                         )}
                     </div>
                 </div>
