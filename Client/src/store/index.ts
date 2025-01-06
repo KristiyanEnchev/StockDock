@@ -3,9 +3,12 @@ import { persistStore, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 
 import storage from 'redux-persist/lib/storage';
 import toast from 'react-hot-toast';
 import persistReducer from 'redux-persist/es/persistReducer';
-import themeReducer from '../features/theme/themeSlice';
-import { authApi } from '../features/auth/authApi';
-import authReducer from '../features/auth/authSlice';
+
+import themeReducer from '@/features/theme/themeSlice';
+import authReducer from '@/features/auth/authSlice';
+import stocksReducer from '@/features/stocks/stocksSlice';
+
+import { authApi } from '@/features/auth/authApi';
 
 const themePersistConfig = {
     key: 'theme',
@@ -33,6 +36,7 @@ const rtkQueryErrorLogger: Middleware = () => (next) => (action) => {
 const rootReducer = combineReducers({
     auth: persistReducer(authPersistConfig, authReducer),
     theme: persistReducer(themePersistConfig, themeReducer),
+    stocks: stocksReducer,
     [authApi.reducerPath]: authApi.reducer,
 });
 

@@ -1,4 +1,7 @@
 import * as signalR from '@microsoft/signalr';
+import { store } from '@/store';
+import { updateStockPrice, updatePopularStocks } from '@/features/stocks/stocksSlice';
+
 
 let connection: signalR.HubConnection | null = null;
 
@@ -16,6 +19,14 @@ export const initializeSignalR = (token?: string): Promise<void> => {
         .build();
 
     connection = hubConnectionBuilder;
+
+    connection.on('ReceiveStockPriceUpdate', (stock) => {
+        store.dispatch(updateStockPrice(stock));
+    });
+
+    connection.on('ReceivePopularStocksUpdate', (stocks) => {
+        store.dispatch(updatePopularStocks(stocks));
+    });
 
     connection.onclose(() => {
         console.log('SignalR connection closed');
