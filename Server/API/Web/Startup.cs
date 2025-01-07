@@ -10,8 +10,6 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.AspNetCore.Server.Kestrel.Https;
 
-    using StackExchange.Redis;
-
     using Application;
     using Application.Interfaces.Stock;
     using Application.Interfaces.Identity;

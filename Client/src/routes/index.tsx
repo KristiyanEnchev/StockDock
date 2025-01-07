@@ -1,9 +1,9 @@
-import { lazy, Suspense } from "react";
+import { lazy } from "react";
 import { Route, Routes } from "react-router-dom";
 import { MainLayout } from "@/components/layout/MainLayout";
-import LoadingSpinner from '@/components/common/LoadingSpinner';
+import PageWrapper from "@/components/common/PageWrapper";
 
-/// TODO : remove before finishing the project
+/// TODO: Remove delay before production
 const delayImport = <T extends { default: React.ComponentType<any> }>(
     importFunction: () => Promise<T>,
     delay: number = 5000
@@ -13,7 +13,7 @@ const delayImport = <T extends { default: React.ComponentType<any> }>(
     });
 };
 
-const Home = lazy(() => delayImport(() => import('@/pages/Home')));
+const Home = lazy(() => delayImport(() => import("@/pages/Home")));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const Login = lazy(() => import("@/pages/Login"));
 
@@ -21,31 +21,10 @@ export default function AppRoutes() {
     return (
         <Routes>
             <Route path="/" element={<MainLayout />}>
-                <Route
-                    path="/"
-                    element={
-                        <Suspense fallback={<LoadingSpinner size="large" fullScreen={true} variant="alternative" />}>
-                            <Home />
-                        </Suspense>
-                    }
-                />
-                <Route
-                    path="login"
-                    element={
-                        <Suspense fallback={<LoadingSpinner size="large" fullScreen={true} variant="alternative" />}>
-                            <Login />
-                        </Suspense>
-                    }
-                />
+                <Route path="/" element={<PageWrapper component={Home} />} />
+                <Route path="login" element={<PageWrapper component={Login} />} />
             </Route>
-            <Route
-                path="*"
-                element={
-                    <Suspense fallback={<LoadingSpinner size="large" fullScreen={true} variant="alternative" />}>
-                        <NotFound />
-                    </Suspense>
-                }
-            />
+            <Route path="*" element={<PageWrapper component={NotFound} />} />
         </Routes>
     );
 }
