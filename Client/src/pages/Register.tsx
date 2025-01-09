@@ -35,8 +35,44 @@ export default function Register() {
         resolver: zodResolver(registerSchema),
     });
 
+    const onSubmit = async (data: RegisterFormData) => {
+        try {
+            setIsLoading(true);
+            await register({
+                firstName: data.firstName,
+                lastName: data.lastName,
+                email: data.email,
+                password: data.password,
+                confirmPassword: data.confirmPassword,
+            }).unwrap();
+
+            navigate("/", { replace: true });
+            toast.success("Registration successful!");
+        } catch {
+            toast.error("Failed to register. Please try again.");
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     return (
+        <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 bg-light-bg dark:bg-dark-bg">
+            <div className="max-w-md w-full bg-light-card dark:bg-dark-card p-6 rounded-lg shadow-lg border border-light-card dark:border-dark-card">
+                <div className="flex items-center justify-center gap-2 text-light-text dark:text-dark-text">
+                    <LineChart className="w-7 h-7 text-green-600 dark:text-green-400" />
+                    <h2 className="text-2xl font-semibold">Create an Account</h2>
+                </div>
+                <p className="text-center text-sm text-light-text dark:text-dark-text opacity-80 mt-1">
+                    Already have an account?{" "}
+                    <Link
+                        to="/login"
+                        className="font-medium text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 transition"
+                    >
+                        Sign in here
+                    </Link>
+                </p>
 
+            </div>
+        </div>
     );
 }
