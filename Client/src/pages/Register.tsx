@@ -71,7 +71,67 @@ export default function Register() {
                         Sign in here
                     </Link>
                 </p>
-
+                <form className="mt-5 space-y-4" onSubmit={handleSubmit(onSubmit)}>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <input
+                                type="text"
+                                {...registerField("firstName")}
+                                placeholder="First Name"
+                                className="w-full px-4 py-2 bg-light-bg dark:bg-dark-bg border border-light-card dark:border-dark-card rounded-md focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400"
+                                disabled={isLoading}
+                            />
+                            {errors.firstName && <p className="text-xs text-red-500">{errors.firstName.message}</p>}
+                        </div>
+                        <div>
+                            <input
+                                type="text"
+                                {...registerField("lastName")}
+                                placeholder="Last Name"
+                                className="w-full px-4 py-2 bg-light-bg dark:bg-dark-bg border border-light-card dark:border-dark-card rounded-md focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400"
+                                disabled={isLoading}
+                            />
+                            {errors.lastName && <p className="text-xs text-red-500">{errors.lastName.message}</p>}
+                        </div>
+                    </div>
+                    <div>
+                        <input
+                            type="email"
+                            {...registerField("email")}
+                            placeholder="Email"
+                            className="w-full px-4 py-2 bg-light-bg dark:bg-dark-bg border border-light-card dark:border-dark-card rounded-md focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400"
+                            disabled={isLoading}
+                        />
+                        {errors.email && <p className="text-xs text-red-500">{errors.email.message}</p>}
+                    </div>
+                    <div>
+                        <input
+                            type="password"
+                            {...registerField("password")}
+                            placeholder="Password"
+                            className="w-full px-4 py-2 bg-light-bg dark:bg-dark-bg border border-light-card dark:border-dark-card rounded-md focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400"
+                            disabled={isLoading}
+                        />
+                        {errors.password && <p className="text-xs text-red-500">{errors.password.message}</p>}
+                    </div>
+                    <div>
+                        <input
+                            type="password"
+                            {...registerField("confirmPassword")}
+                            placeholder="Confirm Password"
+                            className="w-full px-4 py-2 bg-light-bg dark:bg-dark-bg border border-light-card dark:border-dark-card rounded-md focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400"
+                            disabled={isLoading}
+                        />
+                        {errors.confirmPassword && <p className="text-xs text-red-500">{errors.confirmPassword.message}</p>}
+                    </div>
+                    <button
+                        type="submit"
+                        disabled={isLoading}
+                        className="w-full flex justify-center items-center gap-2 px-4 py-2 rounded-md bg-green-600 dark:bg-green-500 text-white hover:bg-green-700 dark:hover:bg-green-400 transition disabled:opacity-50"
+                    >
+                        {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <>Create Account</>}
+                    </button>
+                </form>
             </div>
         </div>
     );
