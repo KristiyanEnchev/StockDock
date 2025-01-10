@@ -6,6 +6,7 @@ import PageWrapper from "@/components/common/PageWrapper";
 const Home = lazy(() => import("@/pages/Home"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const Login = lazy(() => import("@/pages/Login"));
+const Register = lazy(() => import("@/pages/Register"));
 
 export default function AppRoutes() {
     return (
@@ -13,6 +14,7 @@ export default function AppRoutes() {
             <Route path="/" element={<MainLayout />}>
                 <Route path="/" element={<PageWrapper component={Home} />} />
                 <Route path="login" element={<PageWrapper component={Login} />} />
+                <Route path="register" element={<PageWrapper component={Register} />} />
             </Route>
             <Route path="*" element={<PageWrapper component={NotFound} />} />
         </Routes>
