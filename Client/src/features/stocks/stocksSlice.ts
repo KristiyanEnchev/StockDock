@@ -25,7 +25,6 @@ export const stocksSlice = createSlice({
         },
         updatePopularStocks: (state, action: PayloadAction<StockDto[]>) => {
             state.popularStocks = action.payload;
-
             action.payload.forEach(stock => {
                 state.liveStocks[stock.symbol] = {
                     ...state.liveStocks[stock.symbol],
