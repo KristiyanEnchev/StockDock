@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AlertDto } from '../../types/alertTypes';
 
 interface AlertsState {
@@ -19,6 +19,11 @@ export const alertsSlice = createSlice({
     name: 'alerts',
     initialState,
     reducers: {
+        setUserAlerts: (state, action: PayloadAction<AlertDto[]>) => {
+            state.userAlerts = action.payload;
+            state.loading = false;
+            state.error = null;
+        },
     }
 });
 
