@@ -1,6 +1,6 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
-import { StockDto } from '../../types/stockTypes';
-import { baseQueryWithReauth } from '../api/baseQueryWithReauth';
+import { StockDto } from '@/types/stockTypes';
+import { baseQueryWithReauth } from '@/features/auth/baseQueryWithReauth';
 
 export const watchlistApi = createApi({
     reducerPath: 'watchlistApi',
