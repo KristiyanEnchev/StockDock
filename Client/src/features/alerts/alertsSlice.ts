@@ -37,6 +37,24 @@ export const alertsSlice = createSlice({
                 }
             }
         },
+        alertCreated: (state, action: PayloadAction<AlertDto>) => {
+            state.userAlerts.push(action.payload);
+            state.loading = false;
+            state.error = null;
+        },
+        alertDeleted: (state, action: PayloadAction<string>) => {
+            state.userAlerts = state.userAlerts.filter(alert => alert.id !== action.payload);
+            state.loading = false;
+            state.error = null;
+        },
+        alertsLoading: (state) => {
+            state.loading = true;
+            state.error = null;
+        },
+        alertError: (state, action: PayloadAction<string>) => {
+            state.loading = false;
+            state.error = action.payload;
+        },
     }
 });
 
