@@ -24,6 +24,19 @@ export const alertsSlice = createSlice({
             state.loading = false;
             state.error = null;
         },
+        alertTriggered: (state, action: PayloadAction<AlertDto>) => {
+            const index = state.userAlerts.findIndex(alert => alert.id === action.payload.id);
+            if (index !== -1) {
+                state.userAlerts[index] = action.payload;
+            }
+            if (!state.triggeredAlerts.some(alert => alert.id === action.payload.id)) {
+                state.triggeredAlerts.unshift(action.payload);
+
+                if (state.triggeredAlerts.length > 50) {
+                    state.triggeredAlerts.pop();
+                }
+            }
+        },
     }
 });
 
