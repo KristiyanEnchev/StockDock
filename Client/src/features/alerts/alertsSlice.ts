@@ -55,6 +55,15 @@ export const alertsSlice = createSlice({
             state.loading = false;
             state.error = action.payload;
         },
+        clearTriggeredAlerts: (state) => {
+            state.triggeredAlerts = [];
+        },
+        clearAlerts: (state) => {
+            state.userAlerts = [];
+            state.triggeredAlerts = [];
+            state.loading = false;
+            state.error = null;
+        }
     }
 });
 
