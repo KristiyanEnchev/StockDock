@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { AlertDto } from '../../types/alertTypes';
+import { AlertDto } from '@/types/alertTypes';
+import { RootState } from '@/store';
 
 interface AlertsState {
     userAlerts: AlertDto[];
@@ -31,7 +32,6 @@ export const alertsSlice = createSlice({
             }
             if (!state.triggeredAlerts.some(alert => alert.id === action.payload.id)) {
                 state.triggeredAlerts.unshift(action.payload);
-
                 if (state.triggeredAlerts.length > 50) {
                     state.triggeredAlerts.pop();
                 }
@@ -68,4 +68,19 @@ export const alertsSlice = createSlice({
 });
 
 export const {
+    setUserAlerts,
+    alertTriggered,
+    alertCreated,
+    alertDeleted,
+    alertsLoading,
+    alertError,
+    clearTriggeredAlerts,
+    clearAlerts
 } = alertsSlice.actions;
+
+export const selectUserAlerts = (state: RootState) => state.alerts.userAlerts;
+export const selectTriggeredAlerts = (state: RootState) => state.alerts.triggeredAlerts;
+export const selectAlertsLoading = (state: RootState) => state.alerts.loading;
+export const selectAlertsError = (state: RootState) => state.alerts.error;
+
+export default alertsSlice.reducer;
