@@ -6,6 +6,7 @@
 
     using Microsoft.AspNetCore.SignalR;
     using Microsoft.Extensions.Logging;
+    using Microsoft.AspNetCore.Authorization;
 
     using Application.Interfaces.Stock;
     using Application.Interfaces.Alerts;
@@ -15,7 +16,6 @@
     using Models.Stock;
 
     using Domain.Entities.Stock;
-    using Microsoft.AspNetCore.Authorization;
 
     public class StockHub : Hub<IStockHub>
     {

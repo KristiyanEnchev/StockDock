@@ -26,8 +26,6 @@ namespace Host
                 await app.Services.InitializeDatabase();
 
                 app.UseWeb();
-                app.MapEndpoints();
-
                 app.Run();
             }
             catch (Exception ex) when (!ex.GetType().Name.Equals("HostAbortedException", StringComparison.Ordinal))
