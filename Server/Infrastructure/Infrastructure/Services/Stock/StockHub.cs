@@ -40,7 +40,18 @@
 
         public override async Task OnConnectedAsync()
         {
-            var userId = _currentUser.Id!;
+            var userId = _currentUser.Id;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                _logger.LogWarning("Anonymous user connected with connection ID {ConnectionId}",
+                    Context.ConnectionId);
+
+                await Groups.AddToGroupAsync(Context.ConnectionId, "popular_stocks");
+                await base.OnConnectedAsync();
+                return;
+            }
+
             _logger.LogInformation("User {UserId} connected with connection ID {ConnectionId}",
                 userId, Context.ConnectionId);
 
@@ -62,16 +73,27 @@
 
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
-            var userId = _currentUser.Id!;
+            var userId = _currentUser.Id;
 
-            if (_userSubscriptions.TryGetValue(userId, out var subscriptions))
+            if (!string.IsNullOrEmpty(userId))
             {
-                foreach (var symbol in subscriptions)
-                {
-                    await Groups.RemoveFromGroupAsync(Context.ConnectionId, symbol);
-                }
+                _logger.LogInformation("User {UserId} disconnected with connection ID {ConnectionId}",
+                    userId, Context.ConnectionId);
 
-                _userSubscriptions.Remove(userId);
+                if (_userSubscriptions.TryGetValue(userId, out var subscriptions))
+                {
+                    foreach (var symbol in subscriptions)
+                    {
+                        await Groups.RemoveFromGroupAsync(Context.ConnectionId, symbol);
+                    }
+
+                    _userSubscriptions.Remove(userId);
+                }
+            }
+            else
+            {
+                _logger.LogInformation("Anonymous user disconnected with connection ID {ConnectionId}",
+                    Context.ConnectionId);
             }
 
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, "popular_stocks");
@@ -84,7 +106,13 @@
         {
             try
             {
-                var userId = _currentUser.Id!;
+                var userId = _currentUser.Id;
+
+                if (string.IsNullOrEmpty(userId))
+                {
+                    _logger.LogWarning("Attempt to subscribe to stock {Symbol} without authentication", symbol);
+                    throw new UnauthorizedAccessException("Authentication required to subscribe to stocks");
+                }
 
                 await Groups.AddToGroupAsync(Context.ConnectionId, symbol);
 
@@ -110,7 +138,13 @@
         {
             try
             {
-                var userId = _currentUser.Id!;
+                var userId = _currentUser.Id;
+
+                if (string.IsNullOrEmpty(userId))
+                {
+                    _logger.LogWarning("Attempt to unsubscribe from stock {Symbol} without authentication", symbol);
+                    throw new UnauthorizedAccessException("Authentication required to unsubscribe from stocks");
+                }
 
                 await Groups.RemoveFromGroupAsync(Context.ConnectionId, symbol);
 

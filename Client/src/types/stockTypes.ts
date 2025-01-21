@@ -20,3 +20,5 @@ export interface StockPriceHistoryDto {
     close: number;
     volume: number;
 }
+
+export type SortOption = 'symbol' | 'price' | 'change' | 'volume';
