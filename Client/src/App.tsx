@@ -6,9 +6,7 @@ import { initializeTheme } from './lib/theme';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from './store';
-import { useAppSelector } from './store/hooks';
-import { selectIsAuthenticated, selectToken } from './features/auth/authSlice';
-import { initializeSignalR } from './services/signalRService';
+import SignalRInitializer from './services/SignalRInitializer';
 
 function App() {
   useEffect(() => {
@@ -32,19 +30,6 @@ function App() {
       </PersistGate>
     </Provider>
   );
-}
-
-function SignalRInitializer() {
-  const token = useAppSelector(selectToken);
-  const isAuthenticated = useAppSelector(selectIsAuthenticated);
-
-  useEffect(() => {
-    initializeSignalR(token || undefined)
-      .then(() => console.log('SignalR connection established'))
-      .catch(err => console.error('Failed to initialize SignalR:', err));
-  }, [token, isAuthenticated]);
-
-  return null;
 }
 
 export default App;
