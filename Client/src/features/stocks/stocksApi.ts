@@ -1,5 +1,5 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
-import { StockDto, StockPriceHistoryDto } from '../../types/stockTypes';
+import { StockDto, StockPriceHistoryDto } from '@/types/stockTypes';
 import { baseQueryWithReauth } from '@/features/auth/baseQueryWithReauth';
 
 export const stocksApi = createApi({
