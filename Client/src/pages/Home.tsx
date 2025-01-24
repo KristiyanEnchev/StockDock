@@ -34,7 +34,36 @@ const Home = () => {
                         </div>
                     </div>
 
-
+                    {displayStocks.length > 0 ? (
+                        <WidgetGrid>
+                            {displayStocks.map(stock => (
+                                <StockCard
+                                    key={stock.symbol}
+                                    symbol={stock.symbol}
+                                    companyName={stock.companyName}
+                                    currentPrice={stock.currentPrice}
+                                    previousClose={stock.previousClose}
+                                    change={stock.change}
+                                    changePercent={stock.changePercent}
+                                    volume={stock.volume}
+                                    onRemove={emptyHandler}
+                                    onTogglePin={emptyHandler}
+                                    onUpdateNote={emptyHandler}
+                                    onShowChart={emptyHandler}
+                                    onShowAlerts={emptyHandler}
+                                />
+                            ))}
+                        </WidgetGrid>
+                    ) : (
+                        <div className="flex justify-center items-center h-64 bg-light-card dark:bg-dark-card rounded-lg">
+                            <div className="text-center">
+                                <LineChart className="h-10 w-10 text-light-text dark:text-dark-text opacity-40 mx-auto mb-2" />
+                                <p className="text-light-text dark:text-dark-text opacity-60">
+                                    Loading popular stocks...
+                                </p>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
