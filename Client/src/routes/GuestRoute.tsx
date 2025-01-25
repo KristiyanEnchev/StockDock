@@ -1,13 +1,8 @@
-import React from 'react';
-import { Navigate } from 'react-router-dom';
-import { useAppSelector } from '../store/hooks';
-import { selectIsAuthenticated, selectAuthLoading } from '../features/auth/authSlice';
+import { Navigate, Outlet } from 'react-router-dom';
+import { useAppSelector } from '@/store/hooks';
+import { selectIsAuthenticated, selectAuthLoading } from '@/features/auth/authSlice';
 
-interface GuestRouteProps {
-    children: React.ReactNode;
-}
-
-const GuestRoute: React.FC<GuestRouteProps> = ({ children }) => {
+const GuestRoute = () => {
     const isAuthenticated = useAppSelector(selectIsAuthenticated);
     const isLoading = useAppSelector(selectAuthLoading);
 
@@ -19,7 +14,7 @@ const GuestRoute: React.FC<GuestRouteProps> = ({ children }) => {
         return <Navigate to="/" replace />;
     }
 
-    return <>{children}</>;
+    return <Outlet />;
 };
 
 export default GuestRoute;

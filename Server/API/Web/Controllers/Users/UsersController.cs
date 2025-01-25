@@ -3,15 +3,16 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Authorization;
-    using Application.Handlers.Users.Query;
-    using Application.Handlers.Users.Commands;
 
     using Web.Extensions;
 
     using Models.User;
 
     using Shared;
+
     using Application.Interfaces.Identity;
+    using Application.Handlers.Users.Query;
+    using Application.Handlers.Users.Commands;
 
     [Authorize]
     public class UsersController : ApiController

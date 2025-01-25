@@ -1,14 +1,13 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 import { useAppSelector } from '../store/hooks';
 import { selectIsAuthenticated, selectAuthLoading } from '../features/auth/authSlice';
 
 interface ProtectedRouteProps {
-    children: React.ReactNode;
     requiredRoles?: string[];
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requiredRoles }) => {
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ requiredRoles }) => {
     const isAuthenticated = useAppSelector(selectIsAuthenticated);
     const isLoading = useAppSelector(selectAuthLoading);
     const user = useAppSelector(state => state.auth.user);
@@ -29,7 +28,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requiredRoles
         }
     }
 
-    return <>{children}</>;
+    return <Outlet />;
 };
 
 export default ProtectedRoute;
