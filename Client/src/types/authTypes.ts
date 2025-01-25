@@ -47,3 +47,10 @@ export interface AuthState {
     isAuthenticated: boolean;
     isLoading: boolean;
 }
+
+export interface Result<T> {
+    success: boolean;
+    data: T;
+    errors: string[] | null;
+    message?: string;
+}
