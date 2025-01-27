@@ -13,6 +13,7 @@ import { authApi } from '../features/auth/authApi';
 import { stocksApi } from '../features/stocks/stocksApi';
 import { watchlistApi } from '../features/watchlist/watchlistApi';
 import { alertsApi } from '../features/alerts/alertsApi';
+import { usersApi } from '@/features/auth/usersApi';
 
 const themePersistConfig = {
     key: 'theme',
@@ -52,6 +53,7 @@ const rootReducer = combineReducers({
     [stocksApi.reducerPath]: stocksApi.reducer,
     [watchlistApi.reducerPath]: watchlistApi.reducer,
     [alertsApi.reducerPath]: alertsApi.reducer,
+    [usersApi.reducerPath]: usersApi.reducer,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;
@@ -68,6 +70,7 @@ export const store = configureStore({
             stocksApi.middleware,
             watchlistApi.middleware,
             alertsApi.middleware,
+            usersApi.middleware,
             rtkQueryErrorLogger
         ),
     devTools: process.env.NODE_ENV !== 'production',
