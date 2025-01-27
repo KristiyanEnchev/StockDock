@@ -96,7 +96,152 @@ export default function Profile() {
 
     return (
         <div className="max-w-4xl mx-auto pt-8 px-4 sm:px-6 lg:px-8">
+            <div className="bg-light-card dark:bg-dark-card rounded-lg shadow-md overflow-hidden">
+                <div className="p-6 bg-gradient-to-r from-green-600 to-green-500 dark:from-green-500 dark:to-green-400">
+                    <div className="flex items-center space-x-4">
+                        <div className="bg-light-bg dark:bg-dark-bg p-3 rounded-full">
+                            <User className="h-10 w-10 text-green-600 dark:text-green-400" />
+                        </div>
+                        <div>
+                            <h1 className="text-xl font-bold text-white">
+                                {user.firstName} {user.lastName}
+                            </h1>
+                            <p className="text-green-100">{user.email}</p>
+                        </div>
+                    </div>
+                </div>
 
+                <div className="border-b border-light-card dark:border-dark-card">
+                    <div className="flex">
+                        <button
+                            onClick={() => setActiveTab("account")}
+                            className={`px-4 py-3 text-sm font-medium ${activeTab === "account"
+                                ? "border-b-2 border-green-600 dark:border-green-400 text-green-600 dark:text-green-400"
+                                : "text-light-text dark:text-dark-text hover:text-green-600 dark:hover:text-green-400"
+                                }`}
+                        >
+                            <div className="flex items-center space-x-2">
+                                <User className="h-4 w-4" />
+                                <span>Account</span>
+                            </div>
+                        </button>
+                        <button
+                            onClick={() => setActiveTab("security")}
+                            className={`px-4 py-3 text-sm font-medium ${activeTab === "security"
+                                ? "border-b-2 border-green-600 dark:border-green-400 text-green-600 dark:text-green-400"
+                                : "text-light-text dark:text-dark-text hover:text-green-600 dark:hover:text-green-400"
+                                }`}
+                        >
+                            <div className="flex items-center space-x-2">
+                                <Shield className="h-4 w-4" />
+                                <span>Security</span>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <div className="p-6">
+                    {activeTab === "account" && (
+                        <div className="space-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <h3 className="text-lg font-medium text-light-text dark:text-dark-text mb-2">
+                                        Account Information
+                                    </h3>
+                                    <div className="space-y-4">
+                                        <div className="bg-light-bg dark:bg-dark-bg p-4 rounded-md">
+                                            <div className="flex justify-between">
+                                                <div className="text-xs text-light-text dark:text-dark-text opacity-70">Name</div>
+                                                <div className="text-sm font-medium text-light-text dark:text-dark-text">
+                                                    {user.firstName} {user.lastName}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="bg-light-bg dark:bg-dark-bg p-4 rounded-md">
+                                            <div className="flex justify-between">
+                                                <div className="text-xs text-light-text dark:text-dark-text opacity-70">Email</div>
+                                                <div className="text-sm font-medium text-light-text dark:text-dark-text">
+                                                    {user.email}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="bg-light-bg dark:bg-dark-bg p-4 rounded-md">
+                                            <div className="flex justify-between">
+                                                <div className="text-xs text-light-text dark:text-dark-text opacity-70">Roles</div>
+                                                <div className="text-sm font-medium text-light-text dark:text-dark-text">
+                                                    {user.roles?.join(", ") || "User"}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h3 className="text-lg font-medium text-light-text dark:text-dark-text mb-2">
+                                        Update Email
+                                    </h3>
+                                    <form onSubmit={handleEmailSubmit(onEmailSubmit)} className="space-y-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-light-text dark:text-dark-text mb-1">
+                                                New Email Address
+                                            </label>
+                                            <div className="relative">
+                                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                    <Mail className="h-5 w-5 text-light-text dark:text-dark-text opacity-40" />
+                                                </div>
+                                                <input
+                                                    {...registerEmail("newEmail")}
+                                                    type="email"
+                                                    className="pl-10 w-full px-4 py-2 bg-light-bg dark:bg-dark-bg border border-light-card dark:border-dark-card rounded-md focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400"
+                                                    placeholder="Enter new email address"
+                                                />
+                                            </div>
+                                            {emailErrors.newEmail && (
+                                                <p className="mt-1 text-xs text-red-600">{emailErrors.newEmail.message}</p>
+                                            )}
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-light-text dark:text-dark-text mb-1">
+                                                Current Password
+                                            </label>
+                                            <div className="relative">
+                                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                    <Key className="h-5 w-5 text-light-text dark:text-dark-text opacity-40" />
+                                                </div>
+                                                <input
+                                                    {...registerEmail("currentPassword")}
+                                                    type="password"
+                                                    className="pl-10 w-full px-4 py-2 bg-light-bg dark:bg-dark-bg border border-light-card dark:border-dark-card rounded-md focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400"
+                                                    placeholder="Enter your current password"
+                                                />
+                                            </div>
+                                            {emailErrors.currentPassword && (
+                                                <p className="mt-1 text-xs text-red-600">{emailErrors.currentPassword.message}</p>
+                                            )}
+                                        </div>
+                                        <button
+                                            type="submit"
+                                            disabled={isEmailSubmitting}
+                                            className="w-full flex justify-center items-center space-x-2 px-4 py-2 bg-green-600 dark:bg-green-500 text-white rounded-md hover:bg-green-700 dark:hover:bg-green-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        >
+                                            {isEmailSubmitting ? (
+                                                <Loader2 className="h-5 w-5 animate-spin" />
+                                            ) : (
+                                                <>
+                                                    <Save className="h-5 w-5" />
+                                                    <span>Update Email</span>
+                                                </>
+                                            )}
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+
+                </div>
+            </div>
         </div>
     );
 }
