@@ -25,7 +25,8 @@ export const initializeSignalR = async (token?: string): Promise<void> => {
                 accessTokenFactory: () => token,
                 headers: {
                     "Authorization": `Bearer ${token}`
-                }
+                },
+                transport: signalR.HttpTransportType.WebSockets
             } : {})
         })
         .withAutomaticReconnect([0, 2000, 5000, 10000, 20000])

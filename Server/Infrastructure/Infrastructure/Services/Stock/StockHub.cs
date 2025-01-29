@@ -1,6 +1,7 @@
 ﻿namespace Infrastructure.Services.Stock
 {
     using System;
+    using System.Security.Claims;
     using System.Threading.Tasks;
     using System.Collections.Generic;
 
@@ -37,10 +38,35 @@
             _currentUser = currentUser;
             _alertService = alertService;
         }
+        private string? GetUserId()
+        {
+            if (Context.User?.Identity?.IsAuthenticated != true)
+            {
+                _logger.LogWarning("User is not authenticated in SignalR context");
+                return null;
+            }
+
+            foreach (var claim in Context.User.Claims)
+            {
+                _logger.LogInformation("Claim: {Type} = {Value}", claim.Type, claim.Value);
+            }
+
+            var id = Context.User.FindFirstValue("Id")
+                  ?? Context.User.FindFirstValue(ClaimTypes.NameIdentifier)
+                  ?? Context.User.FindFirstValue("sub")
+                  ?? Context.User.FindFirstValue("userId");
+
+            if (id == null)
+            {
+                _logger.LogWarning("No user identifier found in claims");
+            }
+
+            return id;
+        }
 
         public override async Task OnConnectedAsync()
         {
-            var userId = _currentUser.Id;
+            var userId = GetUserId();
 
             if (string.IsNullOrEmpty(userId))
             {
@@ -73,7 +99,7 @@
 
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
-            var userId = _currentUser.Id;
+            var userId = GetUserId();
 
             if (!string.IsNullOrEmpty(userId))
             {
@@ -106,7 +132,7 @@
         {
             try
             {
-                var userId = _currentUser.Id;
+                var userId = GetUserId();
 
                 if (string.IsNullOrEmpty(userId))
                 {
@@ -138,7 +164,7 @@
         {
             try
             {
-                var userId = _currentUser.Id;
+                var userId = GetUserId();
 
                 if (string.IsNullOrEmpty(userId))
                 {
@@ -167,7 +193,7 @@
         {
             try
             {
-                var userId = _currentUser.Id!;
+                var userId = GetUserId();
 
                 var result = await _watchlistService.AddToWatchlistAsync(userId, symbol);
 
@@ -198,7 +224,7 @@
         {
             try
             {
-                var userId = _currentUser.Id!;
+                var userId = GetUserId();
 
                 var result = await _watchlistService.RemoveFromWatchlistAsync(userId, symbol);
 
@@ -219,7 +245,7 @@
         {
             try
             {
-                var userId = _currentUser.Id!;
+                var userId = GetUserId();
                 var request = new CreateStockAlertRequest
                 {
                     Symbol = symbol,
@@ -252,7 +278,7 @@
         {
             try
             {
-                var userId = _currentUser.Id!;
+                var userId = GetUserId();
                 var result = await _alertService.DeleteAlertAsync(userId, alertId);
 
                 if (result.Success)
@@ -278,7 +304,7 @@
         {
             try
             {
-                var userId = _currentUser.Id!;
+                var userId = GetUserId();
                 var result = await _alertService.GetUserAlertsAsync(userId);
 
                 if (result.Success)
