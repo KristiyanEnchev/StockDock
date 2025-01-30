@@ -1,5 +1,5 @@
 import { useState, useEffect, memo } from "react";
-import { Bell, Pin, PinOff, TrendingUp, TrendingDown, AlertCircle } from "lucide-react";
+import { Bell, Pin, PinOff, X, TrendingUp, TrendingDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useAppSelector } from "@/store/hooks";
@@ -15,10 +15,8 @@ interface StockCardProps {
     changePercent?: number;
     volume?: number;
     isPinned?: boolean;
-    note?: string;
     onRemove: () => void;
     onTogglePin: () => void;
-    onUpdateNote: (note: string) => void;
     onShowChart: (symbol: string) => void;
     onShowAlerts: (symbol: string) => void;
 }
@@ -32,30 +30,35 @@ export const StockCard = memo(({
     changePercent,
     volume,
     isPinned,
-    note,
     onRemove,
     onTogglePin,
-    onUpdateNote,
     onShowChart,
     onShowAlerts,
 }: StockCardProps) => {
-    const [isEditingNote, setIsEditingNote] = useState(false);
-    const [noteText, setNoteText] = useState(note || "");
-    const [showVolumeInfo, setShowVolumeInfo] = useState(false);
     const [lastUpdateTime, setLastUpdateTime] = useState(new Date());
+    const [priceFlash, setPriceFlash] = useState<'up' | 'down' | null>(null);
+    const [prevPrice, setPrevPrice] = useState(currentPrice);
 
     const liveStock = useAppSelector(state => selectLiveStock(state, symbol));
     const alerts = useAppSelector(selectUserAlerts);
 
     useEffect(() => {
-        setNoteText(note || "");
-    }, [note]);
-
-    useEffect(() => {
         if (liveStock) {
+            const newPrice = liveStock.currentPrice;
+
+            // Only flash if the price has actually changed
+            if (newPrice !== prevPrice) {
+                setPriceFlash(newPrice > prevPrice ? 'up' : 'down');
+                setPrevPrice(newPrice);
+
+                // Reset the flash after 1 second
+                const timer = setTimeout(() => setPriceFlash(null), 1000);
+                return () => clearTimeout(timer);
+            }
+
             setLastUpdateTime(new Date());
         }
-    }, [liveStock]);
+    }, [liveStock, prevPrice]);
 
     const hasActiveAlerts = alerts.some(alert =>
         alert.symbol === symbol && !alert.isTriggered
@@ -71,8 +74,6 @@ export const StockCard = memo(({
         volume
     };
 
-    const priceUpdateKey = `${symbol}-${stockData.currentPrice}-${stockData.changePercent}`;
-
     const isPositive = (stockData.changePercent || 0) >= 0;
     const formattedVolume = stockData.volume ?
         stockData.volume > 1000000
@@ -80,23 +81,18 @@ export const StockCard = memo(({
             : `${(stockData.volume / 1000).toFixed(0)}K`
         : 'N/A';
 
-    const handleNoteSubmit = () => {
-        onUpdateNote(noteText);
-        setIsEditingNote(false);
-    };
-
     return (
         <motion.div
             className={cn(
-                "rounded-xl border bg-[#1a1d1f] border-[#2a2d31] p-4 cursor-pointer hover:bg-[#1f2225] transition-colors relative",
-                isPinned && "ring-2 ring-blue-500"
+                "rounded-lg bg-[#111827] border border-[#2a2d3a] p-4 cursor-pointer hover:bg-[#161b2c] transition-all",
+                isPinned && "border-[#22c55e]"
             )}
             onClick={() => onShowChart(symbol)}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.3 }}
-            whileHover={{ y: -4 }}
+            transition={{ duration: 0.2 }}
+            whileHover={{ y: -2 }}
             layout
         >
             <div className="flex justify-between items-start">
@@ -108,120 +104,79 @@ export const StockCard = memo(({
                                 e.stopPropagation();
                                 onTogglePin();
                             }}
-                            className="text-gray-400 hover:text-gray-300"
+                            className="text-gray-400 hover:text-[#22c55e] transition-colors"
                             aria-label={isPinned ? "Unpin stock" : "Pin stock"}
                         >
                             {isPinned ? <PinOff size={16} /> : <Pin size={16} />}
                         </button>
-                        {hasActiveAlerts && (
-                            <AlertCircle size={16} className="text-amber-500" />
-                        )}
                     </div>
                     <AnimatePresence mode="wait">
                         <motion.div
-                            key={priceUpdateKey}
-                            initial={{ opacity: 0, y: -10 }}
+                            key={stockData.currentPrice.toString()}
+                            initial={{ opacity: 0, y: -20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: 10 }}
+                            exit={{ opacity: 0, y: 20 }}
                             transition={{ duration: 0.3 }}
-                            className="text-xl font-bold mt-1 text-white"
+                            className={cn(
+                                "text-xl font-bold mt-1",
+                                priceFlash === 'up' ? "text-[#22c55e]" :
+                                    priceFlash === 'down' ? "text-[#ef4444]" :
+                                        "text-white"
+                            )}
                         >
                             ${stockData.currentPrice.toFixed(2)}
                         </motion.div>
                     </AnimatePresence>
-                    <div className="flex items-center gap-1">
-                        {isPositive ? (
-                            <TrendingUp size={14} className="text-[#22c55e]" />
-                        ) : (
-                            <TrendingDown size={14} className="text-rose-500" />
-                        )}
+                    <div className="flex items-center gap-1 mt-1">
                         <span className={cn(
                             "text-sm",
-                            isPositive ? "text-[#22c55e]" : "text-rose-500"
+                            isPositive ? "text-[#22c55e]" : "text-[#ef4444]"
                         )}>
-                            {stockData.changePercent?.toFixed(2)}% ({isPositive ? "+" : ""}{stockData.change?.toFixed(2)})
+                            {isPositive ? "+" : ""}{stockData.changePercent?.toFixed(2)}% ({isPositive ? "+" : ""}{stockData.change?.toFixed(2)})
                         </span>
                     </div>
                     <div className="text-sm text-gray-400 mt-1">{companyName}</div>
                 </div>
-                <div className="flex gap-2">
-                    <button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            onShowAlerts(symbol);
-                        }}
-                        className="text-gray-400 hover:text-gray-300 p-2 rounded bg-[#2a2d31] hover:bg-[#353a3f] transition-colors"
-                        aria-label="Set price alerts"
-                    >
-                        <Bell size={16} />
-                    </button>
-                    <button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            onRemove();
-                        }}
-                        className="text-gray-400 hover:text-gray-300 hover:text-rose-500 transition-colors"
-                        aria-label="Remove from watchlist"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <line x1="18" y1="6" x2="6" y2="18"></line>
-                            <line x1="6" y1="6" x2="18" y2="18"></line>
-                        </svg>
-                    </button>
+                <div className="flex flex-col items-end gap-2">
+                    <div className="flex gap-1">
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onShowAlerts(symbol);
+                            }}
+                            className="text-gray-400 hover:text-white p-2 rounded-full hover:bg-[#1e293b] transition-colors"
+                            aria-label="Set price alerts"
+                        >
+                            <Bell size={16} />
+                        </button>
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onRemove();
+                            }}
+                            className="text-gray-400 hover:text-[#ef4444] p-2 rounded-full hover:bg-[#1e293b] transition-colors"
+                            aria-label="Remove from watchlist"
+                        >
+                            <X size={16} />
+                        </button>
+                    </div>
+                    <div className="mt-1">
+                        {isPositive ? (
+                            <TrendingUp size={24} className="text-[#22c55e]" />
+                        ) : (
+                            <TrendingDown size={24} className="text-[#ef4444]" />
+                        )}
+                    </div>
                 </div>
             </div>
 
-            <div className="mt-3 flex justify-between items-center text-xs text-gray-400">
-                <button
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        setShowVolumeInfo(!showVolumeInfo);
-                    }}
-                    className="hover:text-gray-300 transition-colors"
-                >
-                    {showVolumeInfo ? 'Vol: ' + formattedVolume : 'Last updated: ' + lastUpdateTime.toLocaleTimeString()}
-                </button>
-            </div>
-
-            <div className="mt-3">
-                {isEditingNote ? (
-                    <div onClick={(e) => e.stopPropagation()} className="relative">
-                        <textarea
-                            value={noteText}
-                            onChange={(e) => setNoteText(e.target.value)}
-                            className="w-full bg-[#2a2d31] text-white border-0 rounded p-2 text-sm"
-                            placeholder="Add a note..."
-                            rows={2}
-                        />
-                        <div className="flex gap-2 mt-2">
-                            <button
-                                onClick={handleNoteSubmit}
-                                className="text-sm bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded transition-colors"
-                            >
-                                Save
-                            </button>
-                            <button
-                                onClick={() => {
-                                    setIsEditingNote(false);
-                                    setNoteText(note || "");
-                                }}
-                                className="text-sm bg-[#2a2d31] hover:bg-[#353a3f] text-white px-2 py-1 rounded transition-colors"
-                            >
-                                Cancel
-                            </button>
-                        </div>
-                    </div>
-                ) : (
-                    <div
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            setIsEditingNote(true);
-                        }}
-                        className="text-sm text-gray-400 hover:text-gray-300 cursor-text min-h-[1.5rem] truncate"
-                    >
-                        {note || "Click to add a note..."}
-                    </div>
-                )}
+            <div className="mt-3 flex justify-between items-center">
+                <div className="text-xs text-gray-500">
+                    Last updated: {lastUpdateTime.toLocaleTimeString()}
+                </div>
+                <div className="text-xs text-gray-500">
+                    Vol: {formattedVolume}
+                </div>
             </div>
         </motion.div>
     );

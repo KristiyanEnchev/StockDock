@@ -48,7 +48,6 @@ const Home = () => {
                                     volume={stock.volume}
                                     onRemove={emptyHandler}
                                     onTogglePin={emptyHandler}
-                                    onUpdateNote={emptyHandler}
                                     onShowChart={emptyHandler}
                                     onShowAlerts={emptyHandler}
                                 />
