@@ -70,6 +70,8 @@
                 services.AddSingleton<DemoStockDataProvider>();
                 services.AddScoped<IExternalStockApi>(sp => sp.GetRequiredService<DemoStockDataProvider>());
                 services.AddHostedService<DemoStockUpdateService>();
+                services.AddScoped<IStockService, DemoStockService>();
+                services.AddScoped<StockDatabaseInitializer>();
             }
             else
             {
@@ -81,9 +83,9 @@
                 });
 
                 services.AddHostedService<StockUpdateService>();
+                services.AddScoped<IStockService, StockService>();
             }
 
-            services.AddScoped<IStockService, StockService>();
             services.AddScoped<IWatchlistService, WatchlistService>();
             services.AddScoped<IStockAlertService, StockAlertService>();
 
@@ -117,11 +119,18 @@
         {
             using var scope = services.CreateScope();
 
-            var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
+            var dbInitializer = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
+            await dbInitializer.InitialiseAsync();
+            await dbInitializer.SeedAsync();
 
-            await initialiser.InitialiseAsync();
+            var config = scope.ServiceProvider.GetRequiredService<IConfiguration>();
+            var stockApiSettings = config.GetSection("StockApi").Get<StockApiSettings>();
 
-            await initialiser.SeedAsync();
+            if (stockApiSettings?.UseDemo == true)
+            {
+                var demoInitializer = scope.ServiceProvider.GetRequiredService<StockDatabaseInitializer>();
+                await demoInitializer.InitializeAsync();
+            }
         }
 
         public static IServiceCollection AddConfigurations(this IServiceCollection services, IWebHostBuilder hostBulder, IWebHostEnvironment env)
