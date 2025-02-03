@@ -1,16 +1,30 @@
-export function initializeTheme() {
-    if (typeof window === "undefined") return true;
-
+export const initializeTheme = () => {
     try {
-        const saved = localStorage.getItem("theme");
-        const isDark = saved ? saved === "dark" : true;
+        const savedTheme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const isDark = savedTheme === 'dark' || (!savedTheme && prefersDark);
 
-        document.documentElement.classList.toggle("dark", isDark);
-        localStorage.setItem("theme", isDark ? "dark" : "light");
-
-        return isDark;
+        if (isDark) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
     } catch (error) {
-        console.error("Failed to initialize theme:", error);
-        return true;
+        document.documentElement.classList.add('dark');
     }
-}
+};
+
+export const toggleTheme = () => {
+    try {
+        const isDark = document.documentElement.classList.contains('dark');
+
+        if (isDark) {
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('theme', 'light');
+        } else {
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('theme', 'dark');
+        }
+    } catch (error) {
+    }
+};
