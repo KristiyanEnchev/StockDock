@@ -1,7 +1,7 @@
 export enum AlertType {
-    PriceAbove = 'PriceAbove',
-    PriceBelow = 'PriceBelow',
-    PercentageChange = 'PercentageChange'
+    PriceAbove = 0,
+    PriceBelow = 1,
+    PercentageChange = 2
 }
 
 export interface AlertDto {

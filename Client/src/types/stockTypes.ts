@@ -13,7 +13,7 @@ export interface StockDto {
 }
 
 export interface StockPriceHistoryDto {
-    date: string;
+    timestamp: string;
     open: number;
     high: number;
     low: number;
