@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useAppSelector } from '@/store/hooks';
 import { selectIsAuthenticated, selectToken } from '@/features/auth/authSlice';
-import { initializeSignalR, stopConnection } from '@/services/signalRService';
+import { initializeSignalR, stopSignalR } from '@/services/signalRService';
 
 function SignalRInitializer() {
     const token = useAppSelector(selectToken);
@@ -10,7 +10,7 @@ function SignalRInitializer() {
     useEffect(() => {
         const setupSignalR = async () => {
             try {
-                await stopConnection();
+                await stopSignalR();
                 await initializeSignalR(isAuthenticated ? token! : undefined);
                 console.log('SignalR connection established');
             } catch (err) {
@@ -21,7 +21,7 @@ function SignalRInitializer() {
         setupSignalR();
 
         return () => {
-            stopConnection()
+            stopSignalR()
                 .catch(err => console.error('Error stopping SignalR connection:', err));
         };
     }, [token, isAuthenticated]);
