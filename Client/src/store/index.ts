@@ -8,6 +8,7 @@ import themeReducer from '../features/theme/themeSlice';
 import authReducer from '../features/auth/authSlice';
 import stocksReducer from '../features/stocks/stocksSlice';
 import alertsReducer from '../features/alerts/alertsSlice';
+import signalRReducer from '../features/signalR/signalRSlice';
 
 import { authApi } from '../features/auth/authApi';
 import { stocksApi } from '../features/stocks/stocksApi';
@@ -49,6 +50,7 @@ const rootReducer = combineReducers({
     theme: persistReducer(themePersistConfig, themeReducer),
     stocks: stocksReducer,
     alerts: persistReducer(alertsPersistConfig, alertsReducer),
+    signalR: signalRReducer,
     [authApi.reducerPath]: authApi.reducer,
     [stocksApi.reducerPath]: stocksApi.reducer,
     [watchlistApi.reducerPath]: watchlistApi.reducer,
