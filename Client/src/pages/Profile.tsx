@@ -64,7 +64,6 @@ export default function Profile() {
             resetPasswordForm();
         } catch (error) {
             toast.error("Failed to update password");
-            console.error("Password change error:", error);
         }
     };
 
@@ -82,7 +81,6 @@ export default function Profile() {
             resetEmailForm();
         } catch (error) {
             toast.error("Failed to update email");
-            console.error("Email update error:", error);
         }
     };
 
