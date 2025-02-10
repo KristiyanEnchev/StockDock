@@ -7,6 +7,8 @@ import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from './store';
 import SignalRInitializer from './services/SignalRInitializer';
+import ConnectionStatus from './components/common/ConnectionStatus';
+import { TriggeredAlerts } from './components/stock/TriggeredAlerts';
 
 function App() {
   useEffect(() => {
@@ -18,14 +20,15 @@ function App() {
       <PersistGate loading={null} persistor={persistor}>
         <BrowserRouter>
           <SignalRInitializer />
+          <ConnectionStatus />
           <AppRoutes />
           <Toaster
             position="bottom-right"
             toastOptions={{
-              className: 'dark:bg-library-dark-paper dark:text-library-dark-text-primary',
               duration: 3000,
             }}
           />
+          <TriggeredAlerts />
         </BrowserRouter>
       </PersistGate>
     </Provider>
