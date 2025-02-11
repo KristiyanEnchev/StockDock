@@ -26,7 +26,7 @@
         }
 
         [HttpGet("popular")]
-        public async Task<ActionResult> GetPopularStocks([FromQuery] int limit = 10)
+        public async Task<ActionResult> GetPopularStocks([FromQuery] int limit)
         {
             return await Mediator.Send(new GetPopularStocksQuery(limit)).ToActionResult();
         }
