@@ -78,7 +78,7 @@ export default function Register() {
                                 type="text"
                                 {...registerField("firstName")}
                                 placeholder="First Name"
-                                className="w-full px-4 py-2 bg-light-bg dark:bg-dark-bg border border-light-card dark:border-dark-card rounded-md focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400"
+                                className="w-full text-light-text dark:text-dark-text px-4 py-2 bg-light-bg dark:bg-dark-bg border border-light-card dark:border-dark-card rounded-md focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400"
                                 disabled={isLoading}
                             />
                             {errors.firstName && <p className="text-xs text-red-500">{errors.firstName.message}</p>}
@@ -88,7 +88,7 @@ export default function Register() {
                                 type="text"
                                 {...registerField("lastName")}
                                 placeholder="Last Name"
-                                className="w-full px-4 py-2 bg-light-bg dark:bg-dark-bg border border-light-card dark:border-dark-card rounded-md focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400"
+                                className="w-full text-light-text dark:text-dark-text px-4 py-2 bg-light-bg dark:bg-dark-bg border border-light-card dark:border-dark-card rounded-md focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400"
                                 disabled={isLoading}
                             />
                             {errors.lastName && <p className="text-xs text-red-500">{errors.lastName.message}</p>}
@@ -99,7 +99,7 @@ export default function Register() {
                             type="email"
                             {...registerField("email")}
                             placeholder="Email"
-                            className="w-full px-4 py-2 bg-light-bg dark:bg-dark-bg border border-light-card dark:border-dark-card rounded-md focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400"
+                            className="w-full text-light-text dark:text-dark-text px-4 py-2 bg-light-bg dark:bg-dark-bg border border-light-card dark:border-dark-card rounded-md focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400"
                             disabled={isLoading}
                         />
                         {errors.email && <p className="text-xs text-red-500">{errors.email.message}</p>}
@@ -109,7 +109,7 @@ export default function Register() {
                             type="password"
                             {...registerField("password")}
                             placeholder="Password"
-                            className="w-full px-4 py-2 bg-light-bg dark:bg-dark-bg border border-light-card dark:border-dark-card rounded-md focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400"
+                            className="w-full text-light-text dark:text-dark-text px-4 py-2 bg-light-bg dark:bg-dark-bg border border-light-card dark:border-dark-card rounded-md focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400"
                             disabled={isLoading}
                         />
                         {errors.password && <p className="text-xs text-red-500">{errors.password.message}</p>}
@@ -119,7 +119,7 @@ export default function Register() {
                             type="password"
                             {...registerField("confirmPassword")}
                             placeholder="Confirm Password"
-                            className="w-full px-4 py-2 bg-light-bg dark:bg-dark-bg border border-light-card dark:border-dark-card rounded-md focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400"
+                            className="w-full px-4 py-2 text-light-text dark:text-dark-text bg-light-bg dark:bg-dark-bg border border-light-card dark:border-dark-card rounded-md focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400"
                             disabled={isLoading}
                         />
                         {errors.confirmPassword && <p className="text-xs text-red-500">{errors.confirmPassword.message}</p>}

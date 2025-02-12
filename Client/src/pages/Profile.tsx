@@ -191,7 +191,7 @@ export default function Profile() {
                                                     <input
                                                         {...registerEmail("newEmail")}
                                                         type="email"
-                                                        className="pl-10 w-full px-4 py-2 bg-light-bg dark:bg-dark-bg border border-light-card dark:border-dark-card rounded-md focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400"
+                                                        className="pl-10 w-full text-light-text dark:text-dark-text px-4 py-2 bg-light-bg dark:bg-dark-bg border border-light-card dark:border-dark-card rounded-md focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400"
                                                         placeholder="Enter new email address"
                                                     />
                                                 </div>
@@ -210,7 +210,7 @@ export default function Profile() {
                                                     <input
                                                         {...registerEmail("currentPassword")}
                                                         type="password"
-                                                        className="pl-10 w-full px-4 py-2 bg-light-bg dark:bg-dark-bg border border-light-card dark:border-dark-card rounded-md focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400"
+                                                        className="pl-10 w-full text-light-text dark:text-dark-text px-4 py-2 bg-light-bg dark:bg-dark-bg border border-light-card dark:border-dark-card rounded-md focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400"
                                                         placeholder="Enter your current password"
                                                     />
                                                 </div>
@@ -255,7 +255,7 @@ export default function Profile() {
                                             <input
                                                 {...registerPassword("currentPassword")}
                                                 type="password"
-                                                className="pl-10 w-full px-4 py-2 bg-light-bg dark:bg-dark-bg border border-light-card dark:border-dark-card rounded-md focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400"
+                                                className="pl-10 w-full text-light-text dark:text-dark-text px-4 py-2 bg-light-bg dark:bg-dark-bg border border-light-card dark:border-dark-card rounded-md focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400"
                                                 placeholder="Enter your current password"
                                             />
                                         </div>
@@ -274,7 +274,7 @@ export default function Profile() {
                                             <input
                                                 {...registerPassword("newPassword")}
                                                 type="password"
-                                                className="pl-10 w-full px-4 py-2 bg-light-bg dark:bg-dark-bg border border-light-card dark:border-dark-card rounded-md focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400"
+                                                className="pl-10 w-full text-light-text dark:text-dark-text px-4 py-2 bg-light-bg dark:bg-dark-bg border border-light-card dark:border-dark-card rounded-md focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400"
                                                 placeholder="Enter new password"
                                             />
                                         </div>
@@ -293,7 +293,7 @@ export default function Profile() {
                                             <input
                                                 {...registerPassword("confirmNewPassword")}
                                                 type="password"
-                                                className="pl-10 w-full px-4 py-2 bg-light-bg dark:bg-dark-bg border border-light-card dark:border-dark-card rounded-md focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400"
+                                                className="pl-10 w-full text-light-text dark:text-dark-text px-4 py-2 bg-light-bg dark:bg-dark-bg border border-light-card dark:border-dark-card rounded-md focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400"
                                                 placeholder="Confirm new password"
                                             />
                                         </div>
