@@ -2,7 +2,7 @@ import { LineChart } from "lucide-react";
 
 export function Footer() {
     return (
-        <footer className="w-full py-6 border-t border-light-card dark:border-dark-card bg-light-bg dark:bg-dark-bg">
+        <footer className="w-full py-6 bg-light-bg dark:bg-dark-bg">
             <div className="container mx-auto px-4 text-center">
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-2 text-light-text dark:text-dark-text opacity-80">
                     <span className="flex items-center gap-2">
