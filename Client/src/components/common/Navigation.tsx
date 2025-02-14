@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom";
-import { ChevronDown, LineChart, User } from "lucide-react";
+import { ChevronDown, LineChart, User, List } from "lucide-react";
 import ThemeToggle from "../common/ThemeToggle";
 import { LogoutButton } from "./LogoutButton";
 import { useEffect, useRef, useState } from "react";
 import { selectCurrentUser } from "@/features/auth/authSlice";
 import { useAppSelector } from "@/store/hooks";
+import { NotificationBell } from "./NotificationBell";
 
 export function Navigation() {
     const user = useAppSelector(selectCurrentUser);
@@ -38,6 +39,7 @@ export function Navigation() {
 
                     <div className="flex items-center gap-4">
                         <ThemeToggle />
+                        <NotificationBell />
 
                         {user ? (
                             <div className="relative" ref={dropdownRef}>
@@ -56,10 +58,20 @@ export function Navigation() {
                                     <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-light-card dark:bg-dark-card border border-light-card dark:border-dark-card">
                                         <div className="py-1">
                                             <Link
-                                                to="/profile"
-                                                className="block px-4 py-2 text-light-text dark:text-dark-text hover:bg-light-bg dark:hover:bg-dark-bg transition"
+                                                to="/watchlist"
+                                                className="flex items-center gap-2 px-4 py-2 text-light-text dark:text-dark-text hover:bg-light-bg dark:hover:bg-dark-bg transition"
+                                                onClick={() => setIsDropdownOpen(false)}
                                             >
-                                                Profile
+                                                <List className="w-4 h-4" />
+                                                <span>Watchlist</span>
+                                            </Link>
+                                            <Link
+                                                to="/profile"
+                                                className="flex items-center gap-2 px-4 py-2 text-light-text dark:text-dark-text hover:bg-light-bg dark:hover:bg-dark-bg transition"
+                                                onClick={() => setIsDropdownOpen(false)}
+                                            >
+                                                <User className="w-4 h-4" />
+                                                <span>Profile</span>
                                             </Link>
                                         </div>
                                     </div>
