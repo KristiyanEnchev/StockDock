@@ -1,5 +1,5 @@
 import { useState, useEffect, memo } from "react";
-import { Bell, Pin, PinOff, X, TrendingUp, TrendingDown } from "lucide-react";
+import { Bell, Pin, X, TrendingUp, TrendingDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useAppSelector } from "@/store/hooks";
@@ -30,7 +30,7 @@ export const StockCard = memo(({
     change,
     changePercent,
     volume,
-    isPinned,
+    isPinned = false,
     onRemove,
     onTogglePin,
     onShowChart,
@@ -40,6 +40,7 @@ export const StockCard = memo(({
     const [priceFlash, setPriceFlash] = useState<'up' | 'down' | null>(null);
     const [prevPrice, setPrevPrice] = useState(currentPrice);
     const [showChartDialog, setShowChartDialog] = useState(false);
+    const [pinAnimation, setPinAnimation] = useState(false);
 
     const liveStock = useAppSelector(state => selectLiveStock(state, symbol));
     const alerts = useAppSelector(selectUserAlerts);
@@ -86,12 +87,19 @@ export const StockCard = memo(({
         onShowChart(symbol);
     };
 
+    const handleTogglePin = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setPinAnimation(true);
+        setTimeout(() => setPinAnimation(false), 300);
+        onTogglePin();
+    };
+
     return (
         <>
             <motion.div
                 className={cn(
                     "rounded-lg bg-[#111827] border border-[#2a2d3a] p-4 cursor-pointer hover:bg-[#161b2c] transition-all",
-                    isPinned && "border-[#22c55e]"
+                    isPinned && "border-[#22c55e] shadow-[0_0_10px_rgba(34,197,94,0.3)]"
                 )}
                 onClick={handleCardClick}
                 initial={{ opacity: 0, y: 20 }}
@@ -105,16 +113,20 @@ export const StockCard = memo(({
                     <div>
                         <div className="flex items-center gap-2">
                             <h3 className="text-lg font-bold text-white">{symbol}</h3>
-                            <button
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    onTogglePin();
-                                }}
-                                className="text-gray-400 hover:text-[#22c55e] transition-colors"
+                            <motion.button
+                                onClick={handleTogglePin}
+                                className={cn(
+                                    "transition-colors",
+                                    isPinned
+                                        ? "text-[#22c55e] hover:text-[#ef4444]"
+                                        : "text-gray-400 hover:text-[#22c55e]"
+                                )}
                                 aria-label={isPinned ? "Unpin stock" : "Pin stock"}
+                                animate={pinAnimation ? { scale: [1, 1.5, 1] } : {}}
+                                transition={{ duration: 0.3 }}
                             >
-                                {isPinned ? <PinOff size={16} /> : <Pin size={16} />}
-                            </button>
+                                {isPinned ? <Pin size={16} /> : <Pin size={16} />}
+                            </motion.button>
                             {hasActiveAlerts && (
                                 <span className="text-[#eab308]">
                                     <Bell size={14} />
@@ -192,6 +204,18 @@ export const StockCard = memo(({
                         Vol: {formattedVolume}
                     </div>
                 </div>
+                {isPinned && (
+                    <div className="absolute -top-2 -right-2">
+                        <motion.div
+                            className="bg-[#22c55e] rounded-full p-1"
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            exit={{ scale: 0 }}
+                        >
+                            <Pin size={12} className="text-white" />
+                        </motion.div>
+                    </div>
+                )}
             </motion.div>
 
             <ChartDialog
