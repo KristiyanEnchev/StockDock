@@ -47,6 +47,9 @@ export const alertsSlice = createSlice({
             state.loading = false;
             state.error = null;
         },
+        removeTriggeredAlert: (state, action: PayloadAction<string>) => {
+            state.triggeredAlerts = state.triggeredAlerts.filter(alert => alert.id !== action.payload);
+        },
         alertsLoading: (state) => {
             state.loading = true;
             state.error = null;
@@ -72,6 +75,7 @@ export const {
     alertTriggered,
     alertCreated,
     alertDeleted,
+    removeTriggeredAlert,
     alertsLoading,
     alertError,
     clearTriggeredAlerts,
