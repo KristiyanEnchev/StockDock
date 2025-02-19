@@ -18,7 +18,7 @@ export const stocksApi = createApi({
             })
         }),
         getPopularStocks: builder.query<StockDto[], number>({
-            query: (limit = 10) => ({
+            query: (limit = 30) => ({
                 url: 'stocks/popular',
                 params: { limit }
             }),
