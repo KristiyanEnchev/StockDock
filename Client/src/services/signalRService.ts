@@ -19,7 +19,7 @@ export const initializeSignalR = async (token?: string): Promise<void> => {
     if (connection && connection.state === signalR.HubConnectionState.Connected) {
         return Promise.resolve();
     }
-
+    
     connectionStatus = 'connecting';
     store.dispatch(setSignalRStatus('connecting'));
 
@@ -80,7 +80,7 @@ export const initializeSignalR = async (token?: string): Promise<void> => {
         await connection.start();
         connectionStatus = 'connected';
         store.dispatch(setSignalRStatus('connected'));
-
+        
         if (token) {
             try {
                 await connection.invoke('GetUserAlerts');
@@ -181,7 +181,7 @@ export const deleteAlert = async (alertId: string): Promise<void> => {
 export const simulateAlertTrigger = (symbol: string, type: AlertType, threshold: number): void => {
     const state = store.getState();
     const userId = state.auth.user?.id || 'test-user';
-
+    
     const alert: AlertDto = {
         id: `test-${Date.now()}`,
         userId: userId,
@@ -193,7 +193,7 @@ export const simulateAlertTrigger = (symbol: string, type: AlertType, threshold:
         createdAt: new Date().toISOString(),
         lastTriggeredAt: new Date().toISOString()
     };
-
+    
     store.dispatch(alertTriggered(alert));
     toast.success(`Alert triggered: ${symbol} is now ${type === AlertType.PriceAbove ? 'above' : 'below'} $${threshold}`, {
         duration: 6000,
