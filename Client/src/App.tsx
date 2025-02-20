@@ -8,7 +8,6 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from './store';
 import SignalRInitializer from './services/SignalRInitializer';
 import ConnectionStatus from './components/common/ConnectionStatus';
-import { TriggeredAlerts } from './components/stock/TriggeredAlerts';
 
 function App() {
   useEffect(() => {
@@ -28,7 +27,6 @@ function App() {
               duration: 3000,
             }}
           />
-          <TriggeredAlerts />
         </BrowserRouter>
       </PersistGate>
     </Provider>
