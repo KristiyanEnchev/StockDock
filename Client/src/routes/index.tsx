@@ -10,6 +10,7 @@ const NotFound = lazy(() => import("@/pages/NotFound"));
 const Login = lazy(() => import("@/pages/Login"));
 const Register = lazy(() => import("@/pages/Register"));
 const Profile = lazy(() => import("@/pages/Profile"));
+const Watchlist = lazy(() => import("@/pages/Watchlist"));
 
 export default function AppRoutes() {
     return (
@@ -22,6 +23,7 @@ export default function AppRoutes() {
                 </Route>
                 <Route element={<ProtectedRoute />}>
                     <Route path="/profile" element={<PageWrapper component={Profile} />} />
+                    <Route path="/watchlist" element={<PageWrapper component={Watchlist} />} />
                 </Route>
             </Route>
             <Route path="*" element={<PageWrapper component={NotFound} />} />
