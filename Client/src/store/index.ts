@@ -7,6 +7,7 @@ import persistReducer from 'redux-persist/es/persistReducer';
 import themeReducer from '../features/theme/themeSlice';
 import authReducer from '../features/auth/authSlice';
 import stocksReducer from '../features/stocks/stocksSlice';
+import pinnedStocksReducer from '../features/stocks/pinnedStocksSlice';
 import alertsReducer from '../features/alerts/alertsSlice';
 import signalRReducer from '../features/signalR/signalRSlice';
 
@@ -34,6 +35,12 @@ const alertsPersistConfig = {
     whitelist: ['triggeredAlerts']
 };
 
+const pinnedStocksPersistConfig = {
+    key: 'pinnedStocks',
+    storage,
+    whitelist: ['pinnedStocks']
+};
+
 const rtkQueryErrorLogger: Middleware = () => (next) => (action) => {
     if (isRejectedWithValue(action)) {
         const payload = action.payload as { status?: number; data?: { message?: string } };
@@ -49,6 +56,7 @@ const rootReducer = combineReducers({
     auth: persistReducer(authPersistConfig, authReducer),
     theme: persistReducer(themePersistConfig, themeReducer),
     stocks: stocksReducer,
+    pinnedStocks: persistReducer(pinnedStocksPersistConfig, pinnedStocksReducer),
     alerts: persistReducer(alertsPersistConfig, alertsReducer),
     signalR: signalRReducer,
     [authApi.reducerPath]: authApi.reducer,
