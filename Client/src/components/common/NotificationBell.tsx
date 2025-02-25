@@ -63,26 +63,25 @@ export function NotificationBell() {
                         {triggeredAlerts.length > 0 ? (
                             <div className="p-2">
                                 {triggeredAlerts.map(alert => (
-                                    <div 
-                                        key={alert.id} 
+                                    <div
+                                        key={alert.id}
                                         className="p-2 mb-2 bg-light-bg dark:bg-dark-bg rounded flex items-start justify-between"
                                     >
                                         <div>
                                             <div className="flex items-center gap-1 mb-1">
                                                 <span className="font-medium text-light-text dark:text-dark-text">{alert.symbol}</span>
-                                                <span className={`text-xs px-1.5 py-0.5 rounded ${
-                                                    alert.type === AlertType.PriceAbove 
-                                                        ? 'bg-green-600/20 text-green-600 dark:text-green-400' 
+                                                <span className={`text-xs px-1.5 py-0.5 rounded ${alert.type === AlertType.PriceAbove
+                                                        ? 'bg-green-600/20 text-green-600 dark:text-green-400'
                                                         : 'bg-red-600/20 text-red-600 dark:text-red-400'
-                                                }`}>
+                                                    }`}>
                                                     {alert.type === AlertType.PriceAbove ? 'Above' : 'Below'} ${alert.threshold}
                                                 </span>
                                             </div>
                                             <div className="text-xs text-gray-500 dark:text-gray-400">
-                                                Triggered: {new Date(alert.lastTriggeredAt).toLocaleString()}
+                                                Triggered: {alert.lastTriggeredAt ? new Date(alert.lastTriggeredAt).toLocaleString() : 'N/A'}
                                             </div>
                                         </div>
-                                        <button 
+                                        <button
                                             className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 p-1"
                                             onClick={() => handleRemoveAlert(alert.id)}
                                         >

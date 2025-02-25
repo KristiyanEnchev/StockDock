@@ -14,7 +14,7 @@ export const TriggeredAlerts = () => {
 
     return (
         <div className="fixed bottom-4 right-4 z-50 w-80 bg-[#1a1d1f] border border-[#2a2d31] rounded-md shadow-lg overflow-hidden">
-            <div 
+            <div
                 className="flex justify-between items-center p-3 bg-[#2a2d31] cursor-pointer"
                 onClick={() => setIsCollapsed(!isCollapsed)}
             >
@@ -33,23 +33,22 @@ export const TriggeredAlerts = () => {
             {!isCollapsed && (
                 <div className="max-h-60 overflow-y-auto p-2">
                     {triggeredAlerts.map(alert => (
-                        <div 
-                            key={alert.id} 
+                        <div
+                            key={alert.id}
                             className="p-2 mb-2 bg-[#2a2d31] rounded flex items-start justify-between"
                         >
                             <div>
                                 <div className="flex items-center gap-1 mb-1">
                                     <span className="font-medium text-white">{alert.symbol}</span>
-                                    <span className={`text-xs px-1.5 py-0.5 rounded ${
-                                        alert.type === AlertType.PriceAbove 
-                                            ? 'bg-[#22c55e]/20 text-[#22c55e]' 
+                                    <span className={`text-xs px-1.5 py-0.5 rounded ${alert.type === AlertType.PriceAbove
+                                            ? 'bg-[#22c55e]/20 text-[#22c55e]'
                                             : 'bg-[#ef4444]/20 text-[#ef4444]'
-                                    }`}>
+                                        }`}>
                                         {alert.type === AlertType.PriceAbove ? 'Above' : 'Below'} ${alert.threshold}
                                     </span>
                                 </div>
                                 <div className="text-xs text-gray-400">
-                                    Triggered: {new Date(alert.lastTriggeredAt).toLocaleString()}
+                                    Triggered: {alert.lastTriggeredAt ? new Date(alert.lastTriggeredAt).toLocaleString() : 'N/A'}
                                 </div>
                             </div>
                             <button className="text-gray-500 hover:text-gray-300 p-1">

@@ -24,8 +24,7 @@ export const AlertForm = ({ symbol, showAlertForm, setShowAlertForm }: AlertForm
     const liveStock = useAppSelector(state => selectLiveStock(state, symbol));
     const isAuthenticated = useAppSelector(selectIsAuthenticated);
     const navigate = useNavigate();
-    
-    // Get current price for this stock
+
     const currentPrice = liveStock?.currentPrice || 0;
 
     const handleAddAlert = useCallback(async () => {
@@ -65,7 +64,6 @@ export const AlertForm = ({ symbol, showAlertForm, setShowAlertForm }: AlertForm
         }
     }, [isAuthenticated, navigate]);
 
-    // Function to test alert triggering
     const handleTestAlert = useCallback(() => {
         if (!isAuthenticated) {
             toast.error("Please sign in to test alerts");
@@ -81,7 +79,6 @@ export const AlertForm = ({ symbol, showAlertForm, setShowAlertForm }: AlertForm
         }
     }, [alertPrice, alertCondition, symbol, isAuthenticated, navigate]);
 
-    // Get active alerts for this symbol
     const activeAlerts = alerts.filter(alert => alert.symbol === symbol && !alert.isTriggered);
 
     if (!showAlertForm && activeAlerts.length === 0) {
@@ -103,22 +100,20 @@ export const AlertForm = ({ symbol, showAlertForm, setShowAlertForm }: AlertForm
                         <div className="flex">
                             <button
                                 onClick={() => setAlertCondition(AlertType.PriceAbove)}
-                                className={`flex items-center gap-1 px-3 py-1 rounded-l-md text-xs ${
-                                    alertCondition === AlertType.PriceAbove
-                                        ? 'bg-[#22c55e]/20 text-[#22c55e]'
-                                        : 'bg-[#3a3d41] text-gray-300'
-                                }`}
+                                className={`flex items-center gap-1 px-3 py-1 rounded-l-md text-xs ${alertCondition === AlertType.PriceAbove
+                                    ? 'bg-[#22c55e]/20 text-[#22c55e]'
+                                    : 'bg-[#3a3d41] text-gray-300'
+                                    }`}
                             >
                                 <ArrowUp size={12} />
                                 Above
                             </button>
                             <button
                                 onClick={() => setAlertCondition(AlertType.PriceBelow)}
-                                className={`flex items-center gap-1 px-3 py-1 rounded-r-md text-xs ${
-                                    alertCondition === AlertType.PriceBelow
-                                        ? 'bg-[#ef4444]/20 text-[#ef4444]'
-                                        : 'bg-[#3a3d41] text-gray-300'
-                                }`}
+                                className={`flex items-center gap-1 px-3 py-1 rounded-r-md text-xs ${alertCondition === AlertType.PriceBelow
+                                    ? 'bg-[#ef4444]/20 text-[#ef4444]'
+                                    : 'bg-[#3a3d41] text-gray-300'
+                                    }`}
                             >
                                 <ArrowDown size={12} />
                                 Below
@@ -129,7 +124,7 @@ export const AlertForm = ({ symbol, showAlertForm, setShowAlertForm }: AlertForm
                             placeholder="Price"
                             value={alertPrice}
                             onChange={(e) => setAlertPrice(e.target.value)}
-                            className="h-7 text-sm bg-[#1a1d1f] border-[#3a3d41] w-24"
+                            className="h-7 text-sm bg-[#1a1d1f] border-[#3a3d41] w-24 text-light-text dark:text-dark-text"
                         />
                         <Button
                             onClick={handleAddAlert}
@@ -137,17 +132,17 @@ export const AlertForm = ({ symbol, showAlertForm, setShowAlertForm }: AlertForm
                         >
                             Set Alert
                         </Button>
-                        
-                        {import.meta.env.DEV && (
-                            <Button
-                                onClick={handleTestAlert}
-                                className="h-7 px-3 py-0 text-xs bg-[#3a3d41] hover:bg-[#4a4d51] flex items-center gap-1"
-                                title="Test alert trigger (dev only)"
-                            >
-                                <Bell size={12} />
-                                Test
-                            </Button>
-                        )}
+
+                        {/* {import.meta.env.DEV && ( */}
+                        <Button
+                            onClick={handleTestAlert}
+                            className="h-7 px-3 py-0 text-xs bg-[#3a3d41] hover:bg-[#4a4d51] flex items-center gap-1"
+                            title="Test alert trigger (dev only)"
+                        >
+                            <Bell size={12} />
+                            Test
+                        </Button>
+                        {/* )} */}
                     </div>
                 </div>
             )}
@@ -159,7 +154,7 @@ export const AlertForm = ({ symbol, showAlertForm, setShowAlertForm }: AlertForm
                         {activeAlerts.map((alert) => (
                             <div
                                 key={alert.id}
-                                className="flex justify-between items-center p-2 rounded bg-[#1a1d1f] text-xs"
+                                className="flex justify-between items-center p-2 rounded bg-[#1a1d1f] text-xs text-light-text dark:text-dark-text"
                             >
                                 <div className="flex items-center gap-2">
                                     <AlertTriangle

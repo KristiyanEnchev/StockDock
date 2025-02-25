@@ -7,7 +7,7 @@ interface ThemeState {
 }
 
 const getInitialState = (): ThemeState => ({
-    isDark: typeof window === "undefined" ? true : initializeTheme(),
+    isDark: typeof window === "undefined" ? true : Boolean(initializeTheme()),
 });
 
 const themeSlice = createSlice({

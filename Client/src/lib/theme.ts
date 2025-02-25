@@ -1,4 +1,4 @@
-export const initializeTheme = () => {
+export const initializeTheme = (): boolean => {
     try {
         const savedTheme = localStorage.getItem('theme');
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -9,8 +9,11 @@ export const initializeTheme = () => {
         } else {
             document.documentElement.classList.remove('dark');
         }
+
+        return isDark;
     } catch (error) {
         document.documentElement.classList.add('dark');
+        return true;
     }
 };
 
