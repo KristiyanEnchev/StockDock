@@ -17,6 +17,7 @@
     using Application.Interfaces.Watchlist;
 
     using Web.Services;
+    using Web.Extensions.Json;
     using Web.Extensions.Swagger;
     using Web.Extensions.Middleware;
     using Web.Extensions.Healtchecks;
@@ -37,10 +38,9 @@
         public static IServiceCollection AddWeb(this IServiceCollection services, IConfiguration config)
         {
             services.AddHttpContextAccessor();
-            services.AddControllers().AddApplicationPart(Assembly.GetExecutingAssembly()).AddJsonOptions(options =>
-            {
-                options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
-            });
+            services.AddControllers()
+                .AddApplicationPart(Assembly.GetExecutingAssembly())
+                .ConfigureJsonOptions();
 
             services.AddCustomSignalR(config);
             services.AddApplication();
