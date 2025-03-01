@@ -11,8 +11,6 @@ Stock data is sourced from **Alpha Vantage API** (with a demo mode available), p
 
 <p align="center" style="display: flex; justify-content: space-between; align-items: center;">
     <img src="Client/public/stockDock1.png" alt="stockDock 1" style="width: 49%; margin: 0;">
-</p>
-<p align="center" style="display: flex; justify-content: space-between; align-items: center;">
     <img src="Client/public/stockDock3.png" alt="stockDock 3" style="width: 49%; margin: 0;">
 </p>
 
