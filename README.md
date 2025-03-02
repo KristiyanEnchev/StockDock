@@ -2,11 +2,12 @@
 
 ## 🏗️ Overview
 
-**StockDock** is a comprehensive stock tracking and analysis application built with **.NET 6** and **React 18 (Vite + TypeScript)**, leveraging **Clean Architecture**, **DDD**, **CQRS with MediatR**, and modern frontend technologies. The application allows users to track stock prices, set alerts, view historical data, and manage their watchlists.
+**StockDock** is a comprehensive stock tracking and analysis application built with **.NET 9** and **React 18 (Vite + TypeScript)**, leveraging **Clean Architecture**, **DDD**, **CQRS with MediatR**, and modern frontend technologies. The application allows users to track stock prices, set alerts, view historical data, and manage their watchlists.
 
 The backend is built on a solid foundation of **Clean Architecture** with clearly separated layers (Domain, Application, Infrastructure, and API), while the frontend utilizes **React 18** with **TypeScript**, **Redux Toolkit**, **RTK Query**, and **shadcn/ui** components for a sleek and responsive user experience.
 
 Stock data is sourced from **Alpha Vantage API** (with a demo mode available), providing real-time and historical stock information.
+
 ---
 
 <p align="center" style="display: flex; justify-content: space-between; align-items: center;">
@@ -59,7 +60,7 @@ docker-compose up --build -d
 
 ### Backend:
 
-- [.NET 6](https://dotnet.microsoft.com/)
+- [.NET 9](https://dotnet.microsoft.com/)
 - [CQRS & MediatR](https://github.com/jbogard/MediatR) for command/query separation
 - [FluentValidation](https://github.com/FluentValidation/FluentValidation) for request validation
 - [Domain Events](https://www.martinfowler.com/eaaDev/DomainEvent.html) for decoupled domain logic
